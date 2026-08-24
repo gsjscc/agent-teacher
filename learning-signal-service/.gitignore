@@ -1,0 +1,4 @@
+api_key.txt
+data/*.db
+__pycache__/
+*.pyc
