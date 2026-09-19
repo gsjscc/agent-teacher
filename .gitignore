@@ -1,2 +1,9 @@
 .claude/
 pdf_extracted.txt
+测试外部agent服务/data/
+.env
+__pycache__/
+*.pyc
+测试外部agent服务/cloudflared
+测试外部agent服务/bin/
+测试外部agent服务/*.log

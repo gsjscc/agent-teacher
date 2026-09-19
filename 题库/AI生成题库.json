@@ -1,0 +1,5578 @@
+[
+  {
+    "id": "ai_q_0001",
+    "seq": 1,
+    "type": "single_choice",
+    "stem": "机械系统中，用来向机器提供运动和动力的部分称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "执行系统"
+      },
+      {
+        "label": "B",
+        "text": "动力系统"
+      },
+      {
+        "label": "C",
+        "text": "传动系统"
+      },
+      {
+        "label": "D",
+        "text": "控制系统"
+      }
+    ],
+    "answer": "B",
+    "explanation": "动力系统包括原动机及其配套装置，是机械系统的动力源。",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0002",
+    "seq": 2,
+    "type": "single_choice",
+    "stem": "直接与工作对象接触、完成机器预期功能的部分是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "传动系统"
+      },
+      {
+        "label": "B",
+        "text": "控制系统"
+      },
+      {
+        "label": "C",
+        "text": "执行系统"
+      },
+      {
+        "label": "D",
+        "text": "辅助系统"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0003",
+    "seq": 3,
+    "type": "true_false",
+    "stem": "一部机器只能有一个执行机构，不能分解成多个执行机构。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "一部机器可以只有一个执行机构，也可以把功能分解成几个执行机构。",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0004",
+    "seq": 4,
+    "type": "fill_blank",
+    "stem": "机械系统一般由动力系统、____、传动系统、控制系统和辅助系统组成。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "执行系统"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0005",
+    "seq": 5,
+    "type": "multiple_choice",
+    "stem": "下列属于常用原动机的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "电动机"
+      },
+      {
+        "label": "B",
+        "text": "内燃机"
+      },
+      {
+        "label": "C",
+        "text": "液压马达"
+      },
+      {
+        "label": "D",
+        "text": "气马达"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0006",
+    "seq": 6,
+    "type": "single_choice",
+    "stem": "传动系统的主要功能是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "提供机器的动力"
+      },
+      {
+        "label": "B",
+        "text": "协调各系统动作"
+      },
+      {
+        "label": "C",
+        "text": "完成显示、照明等辅助功能"
+      },
+      {
+        "label": "D",
+        "text": "实现运动形式、运动及动力参数的转换"
+      }
+    ],
+    "answer": "D",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0007",
+    "seq": 7,
+    "type": "short_answer",
+    "stem": "简述控制系统在机械系统中的作用。",
+    "stem_images": [],
+    "options": [],
+    "answer": "协调动力系统、执行系统和传动系统的动作，准确可靠地完成整部机器的功能。",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0008",
+    "seq": 8,
+    "type": "fill_blank",
+    "stem": "由凸轮、推杆和机架组成的凸轮机构，可将凸轮轴的转动变换为推杆的____运动。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "上下直移"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0009",
+    "seq": 9,
+    "type": "fill_blank",
+    "stem": "由两个齿轮和机架组成、用来传递两轴间运动和动力的机构称为____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "齿轮机构"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0010",
+    "seq": 10,
+    "type": "single_choice",
+    "stem": "由滑块、连杆、曲柄、机架组成的连杆机构，其功能是将滑块的往复运动变换为曲柄的____运动。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "间歇"
+      },
+      {
+        "label": "B",
+        "text": "回转"
+      },
+      {
+        "label": "C",
+        "text": "摆动"
+      },
+      {
+        "label": "D",
+        "text": "振动"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "machine_composition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0011",
+    "seq": 11,
+    "type": "single_choice",
+    "stem": "平面机构自由度的计算公式为F=____。（n为活动构件数，PL为低副数，PH为高副数）",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "3n-2PL-PH"
+      },
+      {
+        "label": "B",
+        "text": "3n-PL-2PH"
+      },
+      {
+        "label": "C",
+        "text": "2n-3PL-PH"
+      },
+      {
+        "label": "D",
+        "text": "3n-2PL+PH"
+      }
+    ],
+    "answer": "A",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0012",
+    "seq": 12,
+    "type": "true_false",
+    "stem": "两个构件通过点、线接触构成的运动副称为低副。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "点、线接触构成的是高副；面接触构成的才是低副。",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0013",
+    "seq": 13,
+    "type": "single_choice",
+    "stem": "两构件通过圆柱面接触，只允许两构件绕轴线相对转动，这种运动副称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "移动副"
+      },
+      {
+        "label": "B",
+        "text": "转动副"
+      },
+      {
+        "label": "C",
+        "text": "高副"
+      },
+      {
+        "label": "D",
+        "text": "螺旋副"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0014",
+    "seq": 14,
+    "type": "fill_blank",
+    "stem": "机构具有确定运动的条件是机构的自由度必须____，且原动件数必须等于自由度。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "大于零"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0015",
+    "seq": 15,
+    "type": "multiple_choice",
+    "stem": "计算机构自由度时，需要在计算前排除（不计入自由度计算）的特殊情况是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "复合铰链"
+      },
+      {
+        "label": "B",
+        "text": "局部自由度"
+      },
+      {
+        "label": "C",
+        "text": "虚约束"
+      },
+      {
+        "label": "D",
+        "text": "转动副"
+      }
+    ],
+    "answer": [
+      "B",
+      "C"
+    ],
+    "explanation": "局部自由度和虚约束要在计算前排除；复合铰链不是要排除的对象，而是计算低副数时容易漏数或多数，需要正确识别。",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0016",
+    "seq": 16,
+    "type": "single_choice",
+    "stem": "与其他约束作用重复、对机构运动不起独立限制作用的约束称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "复合铰链"
+      },
+      {
+        "label": "B",
+        "text": "局部自由度"
+      },
+      {
+        "label": "C",
+        "text": "虚约束"
+      },
+      {
+        "label": "D",
+        "text": "高副"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0017",
+    "seq": 17,
+    "type": "single_choice",
+    "stem": "两个以上构件在同一轴线上组成多个转动副，投影在运动平面上发生重叠，这种结构称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "复合铰链"
+      },
+      {
+        "label": "B",
+        "text": "虚约束"
+      },
+      {
+        "label": "C",
+        "text": "局部自由度"
+      },
+      {
+        "label": "D",
+        "text": "运动链"
+      }
+    ],
+    "answer": "A",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0018",
+    "seq": 18,
+    "type": "single_choice",
+    "stem": "两构件相对运动时，绝对速度相等、相对速度为零的瞬时重合点称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "转动中心"
+      },
+      {
+        "label": "B",
+        "text": "速度瞬心"
+      },
+      {
+        "label": "C",
+        "text": "质心"
+      },
+      {
+        "label": "D",
+        "text": "回转中心"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "instant_center",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0019",
+    "seq": 19,
+    "type": "true_false",
+    "stem": "若两个构件都是活动构件，则它们之间的瞬心称为绝对瞬心。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "两构件都是活动构件时称为相对瞬心；其中一个是机架时，该瞬心才称为绝对瞬心。",
+    "difficulty": "中",
+    "knowledge_point_id": "instant_center",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0020",
+    "seq": 20,
+    "type": "fill_blank",
+    "stem": "若两构件中有一个为机架，则它们的瞬心称为____瞬心。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "绝对"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "instant_center",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0021",
+    "seq": 21,
+    "type": "single_choice",
+    "stem": "机构组成的两个基本要素是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "构件和零件"
+      },
+      {
+        "label": "B",
+        "text": "构件和运动副"
+      },
+      {
+        "label": "C",
+        "text": "运动副和运动链"
+      },
+      {
+        "label": "D",
+        "text": "机架和原动件"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0022",
+    "seq": 22,
+    "type": "single_choice",
+    "stem": "平面高副允许两构件沿公切线相对移动的同时，还允许两构件____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "绕过接触点且垂直t-n平面的轴相对转动"
+      },
+      {
+        "label": "B",
+        "text": "沿公法线方向移动"
+      },
+      {
+        "label": "C",
+        "text": "绕z轴任意转动"
+      },
+      {
+        "label": "D",
+        "text": "沿任意方向移动"
+      }
+    ],
+    "answer": "A",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0023",
+    "seq": 23,
+    "type": "true_false",
+    "stem": "机架是机构中相对固定不动的构件，是研究其他构件运动的参考坐标系。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0024",
+    "seq": 24,
+    "type": "fill_blank",
+    "stem": "机构中由外界施加驱动力（或驱动力矩）、且运动规律已知的构件称为____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "原动件"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0025",
+    "seq": 25,
+    "type": "single_choice",
+    "stem": "平面机构中活动构件数n与机构构件总数N的关系是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "n=N"
+      },
+      {
+        "label": "B",
+        "text": "n=N-1"
+      },
+      {
+        "label": "C",
+        "text": "n=N+1"
+      },
+      {
+        "label": "D",
+        "text": "n=2N"
+      }
+    ],
+    "answer": "B",
+    "explanation": "机架固定不动、自由度为零，活动构件数n=N-1。",
+    "difficulty": "中",
+    "knowledge_point_id": "mechanism_dof",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0026",
+    "seq": 26,
+    "type": "single_choice",
+    "stem": "铰链四杆机构中，若两连架杆一个为曲柄、另一个为摇杆，该机构称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "双曲柄机构"
+      },
+      {
+        "label": "B",
+        "text": "双摇杆机构"
+      },
+      {
+        "label": "C",
+        "text": "曲柄摇杆机构"
+      },
+      {
+        "label": "D",
+        "text": "曲柄滑块机构"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "lever_condition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0027",
+    "seq": 27,
+    "type": "true_false",
+    "stem": "双曲柄机构中，若相对两杆平行且长度相等（平行四边形机构），主动曲柄和从动曲柄的角速度大小相等。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "平行四边形机构的特点是两曲柄以相同的角速度同向转动，连杆作平动。",
+    "difficulty": "中",
+    "knowledge_point_id": "lever_condition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0028",
+    "seq": 28,
+    "type": "fill_blank",
+    "stem": "铰链四杆机构存在曲柄的条件是：满足杆长条件，且以____为连架杆或机架。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "最短杆"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "lever_condition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0029",
+    "seq": 29,
+    "type": "single_choice",
+    "stem": "曲柄与连杆两次共线位置之间所夹的锐角称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "传动角"
+      },
+      {
+        "label": "B",
+        "text": "压力角"
+      },
+      {
+        "label": "C",
+        "text": "极位夹角"
+      },
+      {
+        "label": "D",
+        "text": "摆角"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "dead_point_quick_return",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0030",
+    "seq": 30,
+    "type": "true_false",
+    "stem": "极位夹角为0°时，机构的行程速比系数K=1，机构具有明显的急回特性。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "极位夹角为0°时K=1，此时机构无急回运动特性，而不是具有明显急回特性。",
+    "difficulty": "中",
+    "knowledge_point_id": "dead_point_quick_return",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0031",
+    "seq": 31,
+    "type": "single_choice",
+    "stem": "机构的压力角为90°（传动角为0°）时，机构所处的位置称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "死点位置"
+      },
+      {
+        "label": "B",
+        "text": "平衡位置"
+      },
+      {
+        "label": "C",
+        "text": "极限位置"
+      },
+      {
+        "label": "D",
+        "text": "啮合位置"
+      }
+    ],
+    "answer": "A",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "pressure_angle",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0032",
+    "seq": 32,
+    "type": "single_choice",
+    "stem": "平面连杆机构又称为____机构。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "高副"
+      },
+      {
+        "label": "B",
+        "text": "低副"
+      },
+      {
+        "label": "C",
+        "text": "凸轮"
+      },
+      {
+        "label": "D",
+        "text": "齿轮"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "lever_condition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0033",
+    "seq": 33,
+    "type": "single_choice",
+    "stem": "平面四杆机构的基本型式是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "曲柄滑块机构"
+      },
+      {
+        "label": "B",
+        "text": "铰链四杆机构"
+      },
+      {
+        "label": "C",
+        "text": "凸轮机构"
+      },
+      {
+        "label": "D",
+        "text": "齿轮机构"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "lever_condition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0034",
+    "seq": 34,
+    "type": "true_false",
+    "stem": "双摇杆机构中，两个连架杆都是摇杆。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "lever_condition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0035",
+    "seq": 35,
+    "type": "fill_blank",
+    "stem": "若满足杆长条件但以最短杆作为连杆（不与机架相邻），则机构类型为____机构。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "双摇杆"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "lever_condition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0036",
+    "seq": 36,
+    "type": "single_choice",
+    "stem": "若不满足杆长条件，无论哪个杆作机架，铰链四杆机构只能获得____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "曲柄摇杆机构"
+      },
+      {
+        "label": "B",
+        "text": "双曲柄机构"
+      },
+      {
+        "label": "C",
+        "text": "双摇杆机构"
+      },
+      {
+        "label": "D",
+        "text": "曲柄滑块机构"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "lever_condition",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0037",
+    "seq": 37,
+    "type": "multiple_choice",
+    "stem": "机构具有急回运动的条件包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "原动件作等速整周回转运动"
+      },
+      {
+        "label": "B",
+        "text": "输出件作往返两行程的运动"
+      },
+      {
+        "label": "C",
+        "text": "极位夹角大于0°"
+      },
+      {
+        "label": "D",
+        "text": "机架必须是最短杆"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "dead_point_quick_return",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0038",
+    "seq": 38,
+    "type": "single_choice",
+    "stem": "压力角与传动角的关系是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "两者相等"
+      },
+      {
+        "label": "B",
+        "text": "两者互余（之和为90°）"
+      },
+      {
+        "label": "C",
+        "text": "两者互补（之和为180°）"
+      },
+      {
+        "label": "D",
+        "text": "无固定关系"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "pressure_angle",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0039",
+    "seq": 39,
+    "type": "true_false",
+    "stem": "压力角越小，传动角越大，机构的传力性能越好。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "pressure_angle",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0040",
+    "seq": 40,
+    "type": "single_choice",
+    "stem": "凸轮机构由凸轮、从动件和____三个基本构件组成。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "连杆"
+      },
+      {
+        "label": "B",
+        "text": "机架"
+      },
+      {
+        "label": "C",
+        "text": "滑块"
+      },
+      {
+        "label": "D",
+        "text": "齿轮"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_mechanism",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0041",
+    "seq": 41,
+    "type": "true_false",
+    "stem": "凸轮机构属于低副机构。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "凸轮廓线与从动件之间是点、线接触，属于高副机构。",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_mechanism",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0042",
+    "seq": 42,
+    "type": "fill_blank",
+    "stem": "为避免运动失真，应使凸轮理论廓线的最小曲率半径大于____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "滚子半径"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_mechanism",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0043",
+    "seq": 43,
+    "type": "single_choice",
+    "stem": "凸轮机构回程通常比推程可以采用更大许用压力角，主要原因是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "回程速度更快"
+      },
+      {
+        "label": "B",
+        "text": "力锁合凸轮机构回程时封闭力较小、一般无自锁问题"
+      },
+      {
+        "label": "C",
+        "text": "回程从动件质量更大"
+      },
+      {
+        "label": "D",
+        "text": "回程凸轮转速更低"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_mechanism",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0044",
+    "seq": 44,
+    "type": "single_choice",
+    "stem": "从动件在运动开始和终止时加速度理论上发生无穷大突变的运动规律，会引起____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "柔性冲击"
+      },
+      {
+        "label": "B",
+        "text": "刚性冲击"
+      },
+      {
+        "label": "C",
+        "text": "无冲击"
+      },
+      {
+        "label": "D",
+        "text": "接触疲劳"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_motion_law",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0045",
+    "seq": 45,
+    "type": "fill_blank",
+    "stem": "从动件运动规律中，加速度对时间的导数称为____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "跃度"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_motion_law",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0046",
+    "seq": 46,
+    "type": "single_choice",
+    "stem": "凸轮机构的优点不包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "结构简单紧凑"
+      },
+      {
+        "label": "B",
+        "text": "工作可靠"
+      },
+      {
+        "label": "C",
+        "text": "可实现各种预期运动规律"
+      },
+      {
+        "label": "D",
+        "text": "凸轮与从动件之间摩擦磨损小"
+      }
+    ],
+    "answer": "D",
+    "explanation": "凸轮廓线与从动件是高副接触，恰恰容易磨损，这是凸轮机构的缺点而非优点。",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_mechanism",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0047",
+    "seq": 47,
+    "type": "true_false",
+    "stem": "凸轮机构一般用于传力较大、位移较大的场合。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "凸轮机构一般多用于传力不大、位移不大的场合。",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_mechanism",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0048",
+    "seq": 48,
+    "type": "fill_blank",
+    "stem": "凸轮机构中，从动件位移、速度、加速度、跃度随时间变化的规律，又称从动件____线图。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "运动"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_motion_law",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0049",
+    "seq": 49,
+    "type": "single_choice",
+    "stem": "直动滚子从动件盘形凸轮机构的压力角，是指凸轮廓线法线与从动件____之间的夹角。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "运动方向线"
+      },
+      {
+        "label": "B",
+        "text": "回转轴线"
+      },
+      {
+        "label": "C",
+        "text": "对称轴线"
+      },
+      {
+        "label": "D",
+        "text": "基圆切线"
+      }
+    ],
+    "answer": "A",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_mechanism",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0050",
+    "seq": 50,
+    "type": "single_choice",
+    "stem": "对于形锁合的凸轮机构，回程许用压力角一般____推程时的数值。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "大于"
+      },
+      {
+        "label": "B",
+        "text": "仍取（与之相当）"
+      },
+      {
+        "label": "C",
+        "text": "小于"
+      },
+      {
+        "label": "D",
+        "text": "无法确定"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_mechanism",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0051",
+    "seq": 51,
+    "type": "fill_blank",
+    "stem": "凸轮机构设计中，滚子半径rr通常取基圆半径r0的____倍范围内选取。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "0.1~0.5"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "cam_mechanism",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0052",
+    "seq": 52,
+    "type": "single_choice",
+    "stem": "渐开线齿轮传动的中心距在一定范围内变化时，其传动比____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "随之增大"
+      },
+      {
+        "label": "B",
+        "text": "随之减小"
+      },
+      {
+        "label": "C",
+        "text": "保持不变"
+      },
+      {
+        "label": "D",
+        "text": "无法确定"
+      }
+    ],
+    "answer": "C",
+    "explanation": "这是渐开线齿轮传动的中心距可分性。",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_involute",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0053",
+    "seq": 53,
+    "type": "true_false",
+    "stem": "渐开线齿廓在传动过程中，齿廓间正压力的方向始终不变。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_involute",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0054",
+    "seq": 54,
+    "type": "fill_blank",
+    "stem": "齿轮分度圆上的压力角，国家标准规定为____度。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "20"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_involute",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0055",
+    "seq": 55,
+    "type": "single_choice",
+    "stem": "两齿廓啮合传动时，啮合角的大小随____变化。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "齿轮转速"
+      },
+      {
+        "label": "B",
+        "text": "中心距"
+      },
+      {
+        "label": "C",
+        "text": "齿轮材料"
+      },
+      {
+        "label": "D",
+        "text": "润滑条件"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_involute",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0056",
+    "seq": 56,
+    "type": "single_choice",
+    "stem": "下列不属于标准齿轮判定条件的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "分度圆上具有标准模数和标准压力角"
+      },
+      {
+        "label": "B",
+        "text": "分度圆上齿厚等于齿槽宽"
+      },
+      {
+        "label": "C",
+        "text": "具有标准的齿顶高和齿根高"
+      },
+      {
+        "label": "D",
+        "text": "齿数必须大于100"
+      }
+    ],
+    "answer": "D",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_profile_shift",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0057",
+    "seq": 57,
+    "type": "true_false",
+    "stem": "用范成法加工标准齿轮时，齿数过少会发生根切现象。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_profile_shift",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0058",
+    "seq": 58,
+    "type": "multiple_choice",
+    "stem": "避免齿轮根切现象的方法有____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "减小齿顶高系数"
+      },
+      {
+        "label": "B",
+        "text": "增大压力角"
+      },
+      {
+        "label": "C",
+        "text": "采用变位修正法（刀具外移）"
+      },
+      {
+        "label": "D",
+        "text": "增大模数"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_profile_shift",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0059",
+    "seq": 59,
+    "type": "single_choice",
+    "stem": "斜齿轮的法面参数取为标准值，主要原因是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "法面上轮齿受力更均匀"
+      },
+      {
+        "label": "B",
+        "text": "加工时刀具通常沿螺旋线方向（法面方向）进刀"
+      },
+      {
+        "label": "C",
+        "text": "法面上的圆是分度圆"
+      },
+      {
+        "label": "D",
+        "text": "国家标准只规定了法面参数"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_helical_bevel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0060",
+    "seq": 60,
+    "type": "single_choice",
+    "stem": "蜗杆传动的正确啮合条件是：蜗杆轴面的模数和压力角分别等于蜗轮____的模数和压力角。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "法面"
+      },
+      {
+        "label": "B",
+        "text": "端面"
+      },
+      {
+        "label": "C",
+        "text": "轴面"
+      },
+      {
+        "label": "D",
+        "text": "螺旋面"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0061",
+    "seq": 61,
+    "type": "true_false",
+    "stem": "蜗杆头数越多，越容易实现自锁。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "蜗杆头数越少越容易自锁，头数越多传动效率越高但自锁性变差。",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0062",
+    "seq": 62,
+    "type": "single_choice",
+    "stem": "齿轮传动的平均传动比总是等于两齿轮____的反比。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "分度圆直径"
+      },
+      {
+        "label": "B",
+        "text": "齿数"
+      },
+      {
+        "label": "C",
+        "text": "模数"
+      },
+      {
+        "label": "D",
+        "text": "压力角"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_involute",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0063",
+    "seq": 63,
+    "type": "single_choice",
+    "stem": "两基圆的内公切线N1N2线，其含义不包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "两齿廓在啮合点的公法线"
+      },
+      {
+        "label": "B",
+        "text": "啮合线"
+      },
+      {
+        "label": "C",
+        "text": "不计摩擦时两齿廓间的力作用线"
+      },
+      {
+        "label": "D",
+        "text": "分度圆的公切线"
+      }
+    ],
+    "answer": "D",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_involute",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0064",
+    "seq": 64,
+    "type": "true_false",
+    "stem": "啮合角随中心距的变化而变化，中心距越大，啮合角越大。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_involute",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0065",
+    "seq": 65,
+    "type": "fill_blank",
+    "stem": "一个齿槽两侧齿廓间的弧线长度称为该圆上的____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "齿槽宽"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_profile_shift",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0066",
+    "seq": 66,
+    "type": "single_choice",
+    "stem": "模数是分度圆____与π的比值。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "直径"
+      },
+      {
+        "label": "B",
+        "text": "半径"
+      },
+      {
+        "label": "C",
+        "text": "齿距"
+      },
+      {
+        "label": "D",
+        "text": "齿厚"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_profile_shift",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0067",
+    "seq": 67,
+    "type": "true_false",
+    "stem": "模数越大，齿轮的齿距、齿厚、轮齿尺寸都越大。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_profile_shift",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0068",
+    "seq": 68,
+    "type": "single_choice",
+    "stem": "齿轮径向间隙（顶隙）存在的作用是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "减小齿轮体积"
+      },
+      {
+        "label": "B",
+        "text": "便于储存润滑油、避免两齿轮卡死"
+      },
+      {
+        "label": "C",
+        "text": "增大传动比"
+      },
+      {
+        "label": "D",
+        "text": "减小根切"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_profile_shift",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0069",
+    "seq": 69,
+    "type": "true_false",
+    "stem": "齿侧间隙的存在有利于提高齿轮传动的运动精度。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "侧隙存在会产生换向冲击和回差，对运动精度要求高的仪器仪表反而不利，侧隙只能很小，设计仍按无侧隙进行。",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_involute",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0070",
+    "seq": 70,
+    "type": "single_choice",
+    "stem": "目前齿轮加工中应用最广泛的方法是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "仿形法"
+      },
+      {
+        "label": "B",
+        "text": "范成法"
+      },
+      {
+        "label": "C",
+        "text": "铸造法"
+      },
+      {
+        "label": "D",
+        "text": "冲压法"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_profile_shift",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0071",
+    "seq": 71,
+    "type": "single_choice",
+    "stem": "蜗杆头数z1=1时称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "单头蜗杆"
+      },
+      {
+        "label": "B",
+        "text": "双头蜗杆"
+      },
+      {
+        "label": "C",
+        "text": "多头蜗杆"
+      },
+      {
+        "label": "D",
+        "text": "标准蜗杆"
+      }
+    ],
+    "answer": "A",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0072",
+    "seq": 72,
+    "type": "single_choice",
+    "stem": "当蜗杆导程角小于当量摩擦角时，蜗杆蜗轮机构具有____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "高效率"
+      },
+      {
+        "label": "B",
+        "text": "自锁性"
+      },
+      {
+        "label": "C",
+        "text": "大传动比"
+      },
+      {
+        "label": "D",
+        "text": "低噪声"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0073",
+    "seq": 73,
+    "type": "single_choice",
+    "stem": "运转时所有齿轮几何轴线相对机架位置都固定不变的轮系称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "周转轮系"
+      },
+      {
+        "label": "B",
+        "text": "定轴轮系"
+      },
+      {
+        "label": "C",
+        "text": "复合轮系"
+      },
+      {
+        "label": "D",
+        "text": "行星轮系"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0074",
+    "seq": 74,
+    "type": "single_choice",
+    "stem": "划分复合轮系中的基本周转轮系时，应首先找出____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "定轴齿轮"
+      },
+      {
+        "label": "B",
+        "text": "系杆"
+      },
+      {
+        "label": "C",
+        "text": "行星轮"
+      },
+      {
+        "label": "D",
+        "text": "中心轮"
+      }
+    ],
+    "answer": "C",
+    "explanation": "正确顺序是先找行星轮，再找支承它的系杆，再找与系杆同轴线且与行星轮啮合的中心轮。",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0075",
+    "seq": 75,
+    "type": "true_false",
+    "stem": "计算复合轮系传动比时，可以把整个复合轮系当作一个周转轮系，直接用转化机构法求解。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "必须先正确区分各个基本轮系，分别列出传动比方程，建立联系后再联立求解。",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0076",
+    "seq": 76,
+    "type": "multiple_choice",
+    "stem": "确定行星轮系齿数时必须满足的条件包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "传动比条件"
+      },
+      {
+        "label": "B",
+        "text": "同心条件"
+      },
+      {
+        "label": "C",
+        "text": "装配条件"
+      },
+      {
+        "label": "D",
+        "text": "邻接条件"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0077",
+    "seq": 77,
+    "type": "fill_blank",
+    "stem": "周转轮系的结构特点是至少有一个齿轮的轴线绕另一固定轴线转动，这个齿轮称为____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "行星轮"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0078",
+    "seq": 78,
+    "type": "single_choice",
+    "stem": "轮系传动比的大小等于____角速度（或转速）之比。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "输入轴与输出轴"
+      },
+      {
+        "label": "B",
+        "text": "主动轮与从动轮"
+      },
+      {
+        "label": "C",
+        "text": "系杆与行星轮"
+      },
+      {
+        "label": "D",
+        "text": "两个中心轮"
+      }
+    ],
+    "answer": "A",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0079",
+    "seq": 79,
+    "type": "true_false",
+    "stem": "复合轮系是既包含定轴轮系部分又包含周转轮系部分，或由几个基本周转轮系组成的轮系。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0080",
+    "seq": 80,
+    "type": "fill_blank",
+    "stem": "划分基本轮系后，剩下由定轴齿轮组成的部分就是____轮系。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "定轴"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0081",
+    "seq": 81,
+    "type": "single_choice",
+    "stem": "行星轮系采用多个均匀分布的行星轮，其目的不包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "提高承载能力"
+      },
+      {
+        "label": "B",
+        "text": "使中心轮上合力为零"
+      },
+      {
+        "label": "C",
+        "text": "平衡系杆所受离心惯性力"
+      },
+      {
+        "label": "D",
+        "text": "减少行星轮齿数"
+      }
+    ],
+    "answer": "D",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0082",
+    "seq": 82,
+    "type": "single_choice",
+    "stem": "为保证相邻两行星轮不发生碰撞干涉，需满足的条件称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "同心条件"
+      },
+      {
+        "label": "B",
+        "text": "装配条件"
+      },
+      {
+        "label": "C",
+        "text": "邻接条件"
+      },
+      {
+        "label": "D",
+        "text": "传动比条件"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0083",
+    "seq": 83,
+    "type": "true_false",
+    "stem": "行星轮系的基本构件回转轴线必须重合于同一轴线，这称为同心条件。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0084",
+    "seq": 84,
+    "type": "fill_blank",
+    "stem": "复合轮系传动比计算的第一步是正确区分____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "各个基本轮系"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_train",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0085",
+    "seq": 85,
+    "type": "single_choice",
+    "stem": "槽轮机构在起动和停止时具有的冲击类型是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "刚性冲击"
+      },
+      {
+        "label": "B",
+        "text": "柔性冲击"
+      },
+      {
+        "label": "C",
+        "text": "无冲击"
+      },
+      {
+        "label": "D",
+        "text": "周期性冲击"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "intermittent_motion",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0086",
+    "seq": 86,
+    "type": "single_choice",
+    "stem": "不完全齿轮机构进入和退出啮合时速度有突变，会引起____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "柔性冲击"
+      },
+      {
+        "label": "B",
+        "text": "刚性冲击"
+      },
+      {
+        "label": "C",
+        "text": "弹性变形"
+      },
+      {
+        "label": "D",
+        "text": "噪声降低"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "intermittent_motion",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0087",
+    "seq": 87,
+    "type": "true_false",
+    "stem": "棘轮机构靠止动棘爪阻止棘轮反转，从而实现单向间歇运动。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "intermittent_motion",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0088",
+    "seq": 88,
+    "type": "fill_blank",
+    "stem": "槽轮机构由主动拨盘、____和机架组成。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "槽轮"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "intermittent_motion",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0089",
+    "seq": 89,
+    "type": "single_choice",
+    "stem": "三种间歇运动机构中，转角大小不能调节、但机械效率高、能准确控制转角的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "棘轮机构"
+      },
+      {
+        "label": "B",
+        "text": "槽轮机构"
+      },
+      {
+        "label": "C",
+        "text": "不完全齿轮机构"
+      },
+      {
+        "label": "D",
+        "text": "凸轮机构"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "intermittent_motion",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0090",
+    "seq": 90,
+    "type": "single_choice",
+    "stem": "槽轮机构中，当圆销未进入径向槽时，槽轮靠____保持静止。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "弹簧压紧"
+      },
+      {
+        "label": "B",
+        "text": "内凹锁止弧被外凸锁止弧锁住"
+      },
+      {
+        "label": "C",
+        "text": "摩擦力"
+      },
+      {
+        "label": "D",
+        "text": "止动棘爪"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "intermittent_motion",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0091",
+    "seq": 91,
+    "type": "true_false",
+    "stem": "不完全齿轮机构的从动轮轮齿布满整个圆周。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "不完全齿轮机构的轮齿不是布满整个圆周，这正是它区别于普通齿轮的地方。",
+    "difficulty": "中",
+    "knowledge_point_id": "intermittent_motion",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0092",
+    "seq": 92,
+    "type": "single_choice",
+    "stem": "不完全齿轮机构的优点是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "无冲击"
+      },
+      {
+        "label": "B",
+        "text": "运动/静止时间比例可在较大范围内变化"
+      },
+      {
+        "label": "C",
+        "text": "适用于高速场合"
+      },
+      {
+        "label": "D",
+        "text": "转角可连续无级调节"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "intermittent_motion",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0093",
+    "seq": 93,
+    "type": "fill_blank",
+    "stem": "棘轮机构中，主动杆往复摆动时，靠驱动棘爪和____棘爪配合实现单向间歇运动。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "止动"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "intermittent_motion",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0094",
+    "seq": 94,
+    "type": "single_choice",
+    "stem": "质心在回转轴线上，但各偏心质量不在同一回转平面内，这种不平衡现象称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "静不平衡"
+      },
+      {
+        "label": "B",
+        "text": "动不平衡"
+      },
+      {
+        "label": "C",
+        "text": "完全平衡"
+      },
+      {
+        "label": "D",
+        "text": "局部不平衡"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0095",
+    "seq": 95,
+    "type": "true_false",
+    "stem": "静不平衡现象只有在转子转动时才能表现出来，静止时无法测出。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "静不平衡在静态即可测出，动不平衡才只有在转动时才显示出来。",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0096",
+    "seq": 96,
+    "type": "single_choice",
+    "stem": "宽径比b/D≤0.2的转子，其质量可近似认为分布在____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "通过质心的轴线上"
+      },
+      {
+        "label": "B",
+        "text": "垂直于回转轴线的同一平面内"
+      },
+      {
+        "label": "C",
+        "text": "整个转子长度上均匀分布"
+      },
+      {
+        "label": "D",
+        "text": "回转轴线上"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0097",
+    "seq": 97,
+    "type": "fill_blank",
+    "stem": "弹簧的弹性力属于工作阻力是____的函数这一类机械特性。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "位置"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0098",
+    "seq": 98,
+    "type": "multiple_choice",
+    "stem": "下列属于工作阻力机械特性分类的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "常数"
+      },
+      {
+        "label": "B",
+        "text": "位置的函数"
+      },
+      {
+        "label": "C",
+        "text": "速度的函数"
+      },
+      {
+        "label": "D",
+        "text": "时间的函数"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0099",
+    "seq": 99,
+    "type": "single_choice",
+    "stem": "机械运转时忽略摩擦力，外力可分为驱动力和____两类。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "惯性力"
+      },
+      {
+        "label": "B",
+        "text": "工作阻力"
+      },
+      {
+        "label": "C",
+        "text": "约束力"
+      },
+      {
+        "label": "D",
+        "text": "离心力"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0100",
+    "seq": 100,
+    "type": "true_false",
+    "stem": "驱动力一般由原动机提供，各种原动机具有不同的机械特性。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0101",
+    "seq": 101,
+    "type": "single_choice",
+    "stem": "揉面机随加工时间增加、面粉粘度增大而工作阻力增大，这属于工作阻力是____的函数。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "位置"
+      },
+      {
+        "label": "B",
+        "text": "速度"
+      },
+      {
+        "label": "C",
+        "text": "时间"
+      },
+      {
+        "label": "D",
+        "text": "常数"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0102",
+    "seq": 102,
+    "type": "single_choice",
+    "stem": "机械中离心惯性力产生的根本原因是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "构件材质不均匀"
+      },
+      {
+        "label": "B",
+        "text": "质心与回转轴线不重合"
+      },
+      {
+        "label": "C",
+        "text": "转速过高"
+      },
+      {
+        "label": "D",
+        "text": "润滑不良"
+      }
+    ],
+    "answer": "B",
+    "explanation": "结构不对称、加工装配误差、材质不均匀等都是导致质心与回转轴线不重合的具体原因，但产生离心惯性力的直接根源是质心与回转轴线不重合。",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0103",
+    "seq": 103,
+    "type": "true_false",
+    "stem": "离心惯性力呈周期性变化，可能引起机械及其基础产生强迫振动甚至共振。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "balance_and_flywheel",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0104",
+    "seq": 104,
+    "type": "single_choice",
+    "stem": "机械零件最基本的设计准则是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "刚度准则"
+      },
+      {
+        "label": "B",
+        "text": "强度准则"
+      },
+      {
+        "label": "C",
+        "text": "耐磨性准则"
+      },
+      {
+        "label": "D",
+        "text": "振动稳定性准则"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0105",
+    "seq": 105,
+    "type": "true_false",
+    "stem": "疲劳断裂时零件所受的最大应力通常远比材料的强度极限低，甚至比屈服极限低。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0106",
+    "seq": 106,
+    "type": "single_choice",
+    "stem": "疲劳断裂过程的第一阶段是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "裂纹扩展"
+      },
+      {
+        "label": "B",
+        "text": "剩余截面断裂"
+      },
+      {
+        "label": "C",
+        "text": "表面产生初始微裂纹"
+      },
+      {
+        "label": "D",
+        "text": "整体塑性变形"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0107",
+    "seq": 107,
+    "type": "fill_blank",
+    "stem": "疲劳断口的特征是无明显塑性变形的____突然断裂。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "脆性"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0108",
+    "seq": 108,
+    "type": "multiple_choice",
+    "stem": "机械零件的四大设计准则包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "强度准则"
+      },
+      {
+        "label": "B",
+        "text": "刚度准则"
+      },
+      {
+        "label": "C",
+        "text": "耐磨性准则"
+      },
+      {
+        "label": "D",
+        "text": "振动稳定性准则"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0109",
+    "seq": 109,
+    "type": "single_choice",
+    "stem": "计算载荷等于____与名义载荷的乘积。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "安全系数"
+      },
+      {
+        "label": "B",
+        "text": "载荷系数"
+      },
+      {
+        "label": "C",
+        "text": "许用应力"
+      },
+      {
+        "label": "D",
+        "text": "疲劳极限"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0110",
+    "seq": 110,
+    "type": "single_choice",
+    "stem": "下列不属于机械零件表面失效的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "腐蚀"
+      },
+      {
+        "label": "B",
+        "text": "磨损"
+      },
+      {
+        "label": "C",
+        "text": "接触疲劳磨损"
+      },
+      {
+        "label": "D",
+        "text": "整体断裂"
+      }
+    ],
+    "answer": "D",
+    "explanation": "整体断裂属于强度失效，不属于表面失效。",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0111",
+    "seq": 111,
+    "type": "single_choice",
+    "stem": "磨粒磨损、粘着磨损（胶合）、接触疲劳磨损都属于____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "腐蚀"
+      },
+      {
+        "label": "B",
+        "text": "磨损"
+      },
+      {
+        "label": "C",
+        "text": "整体断裂"
+      },
+      {
+        "label": "D",
+        "text": "残余变形"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0112",
+    "seq": 112,
+    "type": "true_false",
+    "stem": "刚度是指机械零件承受载荷时抵抗断裂或塑性变形的能力。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "这是强度的定义；刚度是指零件在载荷作用下抵抗弹性变形的能力。",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0113",
+    "seq": 113,
+    "type": "single_choice",
+    "stem": "耐磨性准则是通过控制____来控制磨损量的大小。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "许用应力"
+      },
+      {
+        "label": "B",
+        "text": "单位面积上的压力"
+      },
+      {
+        "label": "C",
+        "text": "表面粗糙度"
+      },
+      {
+        "label": "D",
+        "text": "润滑油粘度"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0114",
+    "seq": 114,
+    "type": "single_choice",
+    "stem": "当零件工作频率等于或接近其固有频率时，会发生____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "疲劳断裂"
+      },
+      {
+        "label": "B",
+        "text": "共振"
+      },
+      {
+        "label": "C",
+        "text": "腐蚀"
+      },
+      {
+        "label": "D",
+        "text": "胶合"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0115",
+    "seq": 115,
+    "type": "fill_blank",
+    "stem": "载荷按大小、方向是否随时间变化，可分为静载荷和____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "变载荷"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0116",
+    "seq": 116,
+    "type": "single_choice",
+    "stem": "机械零件的设计计算一般按____进行。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "名义载荷"
+      },
+      {
+        "label": "B",
+        "text": "工作载荷"
+      },
+      {
+        "label": "C",
+        "text": "计算载荷"
+      },
+      {
+        "label": "D",
+        "text": "极限载荷"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0117",
+    "seq": 117,
+    "type": "true_false",
+    "stem": "静应力只能在静载荷作用下产生，变应力只能在变载荷作用下产生。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "变应力既可以在变载荷下产生，也可以在静载荷作用下产生（如旋转轴上的弯曲应力）。",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0118",
+    "seq": 118,
+    "type": "multiple_choice",
+    "stem": "影响机械零件疲劳强度的最重要因素包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "应力集中"
+      },
+      {
+        "label": "B",
+        "text": "零件尺寸"
+      },
+      {
+        "label": "C",
+        "text": "表面状态"
+      },
+      {
+        "label": "D",
+        "text": "零件颜色"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0119",
+    "seq": 119,
+    "type": "single_choice",
+    "stem": "疲劳断裂过程的第三阶段是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "产生初始微裂纹"
+      },
+      {
+        "label": "B",
+        "text": "裂纹反复塑性变形扩展"
+      },
+      {
+        "label": "C",
+        "text": "剩余截面静强度不足而断裂"
+      },
+      {
+        "label": "D",
+        "text": "表面腐蚀"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "fatigue_strength",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0120",
+    "seq": 120,
+    "type": "single_choice",
+    "stem": "需要预紧的螺纹连接称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "松连接"
+      },
+      {
+        "label": "B",
+        "text": "紧连接"
+      },
+      {
+        "label": "C",
+        "text": "动连接"
+      },
+      {
+        "label": "D",
+        "text": "过渡连接"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "screw_bolt_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0121",
+    "seq": 121,
+    "type": "true_false",
+    "stem": "摩擦防松比机械防松更可靠，应用更广泛。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "机械防松比摩擦防松更可靠、应用更广；摩擦防松不十分可靠，多用于冲击振动较小的场合。",
+    "difficulty": "中",
+    "knowledge_point_id": "screw_bolt_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0122",
+    "seq": 122,
+    "type": "multiple_choice",
+    "stem": "螺纹连接防松的方法按工作原理可分为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "摩擦防松"
+      },
+      {
+        "label": "B",
+        "text": "机械防松"
+      },
+      {
+        "label": "C",
+        "text": "永久防松"
+      },
+      {
+        "label": "D",
+        "text": "弹性防松"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "screw_bolt_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0123",
+    "seq": 123,
+    "type": "single_choice",
+    "stem": "普通平键连接中，起工作面作用、传递转矩的是键的____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "上表面"
+      },
+      {
+        "label": "B",
+        "text": "下表面"
+      },
+      {
+        "label": "C",
+        "text": "两侧面"
+      },
+      {
+        "label": "D",
+        "text": "端面"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "key_spline_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0124",
+    "seq": 124,
+    "type": "single_choice",
+    "stem": "固定在轮毂上、随轴上零件一起沿轴作较大距离滑移的键是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "导向平键"
+      },
+      {
+        "label": "B",
+        "text": "滑键"
+      },
+      {
+        "label": "C",
+        "text": "半圆键"
+      },
+      {
+        "label": "D",
+        "text": "楔键"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "key_spline_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0125",
+    "seq": 125,
+    "type": "true_false",
+    "stem": "圆锥销比圆柱销装拆更方便，多次装拆对连接精度影响较小，应用更广泛。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "key_spline_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0126",
+    "seq": 126,
+    "type": "single_choice",
+    "stem": "在圆柱体外表面形成的螺纹称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "内螺纹"
+      },
+      {
+        "label": "B",
+        "text": "外螺纹"
+      },
+      {
+        "label": "C",
+        "text": "传动螺纹"
+      },
+      {
+        "label": "D",
+        "text": "左旋螺纹"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "screw_bolt_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0127",
+    "seq": 127,
+    "type": "single_choice",
+    "stem": "螺纹按牙型分类，不包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "三角形螺纹"
+      },
+      {
+        "label": "B",
+        "text": "矩形螺纹"
+      },
+      {
+        "label": "C",
+        "text": "梯形螺纹"
+      },
+      {
+        "label": "D",
+        "text": "圆形螺纹"
+      }
+    ],
+    "answer": "D",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "screw_bolt_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0128",
+    "seq": 128,
+    "type": "true_false",
+    "stem": "机械制造中一般采用右旋螺纹，只有特殊情况才采用左旋螺纹。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "screw_bolt_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0129",
+    "seq": 129,
+    "type": "fill_blank",
+    "stem": "通常规定，拧紧后螺栓的预紧应力不得超过其材料屈服极限的____％。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "80"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "screw_bolt_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0130",
+    "seq": 130,
+    "type": "single_choice",
+    "stem": "永久防松的特点是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "可重复使用"
+      },
+      {
+        "label": "B",
+        "text": "不能重复使用"
+      },
+      {
+        "label": "C",
+        "text": "可靠性最低"
+      },
+      {
+        "label": "D",
+        "text": "仅用于振动小的场合"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "screw_bolt_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0131",
+    "seq": 131,
+    "type": "single_choice",
+    "stem": "键连接中，靠键与键槽侧面挤压传递转矩，说明键的工作面是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "上表面"
+      },
+      {
+        "label": "B",
+        "text": "下表面"
+      },
+      {
+        "label": "C",
+        "text": "两个侧面"
+      },
+      {
+        "label": "D",
+        "text": "端面"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "key_spline_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0132",
+    "seq": 132,
+    "type": "true_false",
+    "stem": "半圆键能绕其几何中心在键槽中摆动，以适应轮毂中键槽的斜度，常用于锥形轴端。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "key_spline_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0133",
+    "seq": 133,
+    "type": "single_choice",
+    "stem": "圆柱销利用微量过盈固定在销孔中，多次装拆后会导致____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "紧固性和定位精度提高"
+      },
+      {
+        "label": "B",
+        "text": "紧固性和定位精度降低"
+      },
+      {
+        "label": "C",
+        "text": "没有影响"
+      },
+      {
+        "label": "D",
+        "text": "只影响外观"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "key_spline_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0134",
+    "seq": 134,
+    "type": "single_choice",
+    "stem": "开口销常与____构成铰链连接，并可用作防松零件。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "圆柱销"
+      },
+      {
+        "label": "B",
+        "text": "圆锥销"
+      },
+      {
+        "label": "C",
+        "text": "销轴"
+      },
+      {
+        "label": "D",
+        "text": "平键"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "key_spline_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0135",
+    "seq": 135,
+    "type": "multiple_choice",
+    "stem": "键按结构形式分类，包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "平键"
+      },
+      {
+        "label": "B",
+        "text": "半圆键"
+      },
+      {
+        "label": "C",
+        "text": "楔键"
+      },
+      {
+        "label": "D",
+        "text": "切向键"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "key_spline_connection",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0136",
+    "seq": 136,
+    "type": "single_choice",
+    "stem": "在润滑良好的闭式软齿面齿轮传动中，最主要的失效形式是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "轮齿折断"
+      },
+      {
+        "label": "B",
+        "text": "齿面疲劳点蚀"
+      },
+      {
+        "label": "C",
+        "text": "齿面磨损"
+      },
+      {
+        "label": "D",
+        "text": "胶合"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0137",
+    "seq": 137,
+    "type": "single_choice",
+    "stem": "开式齿轮传动的主要失效形式是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "齿面点蚀"
+      },
+      {
+        "label": "B",
+        "text": "齿面磨损"
+      },
+      {
+        "label": "C",
+        "text": "胶合"
+      },
+      {
+        "label": "D",
+        "text": "塑性变形"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0138",
+    "seq": 138,
+    "type": "true_false",
+    "stem": "齿面疲劳点蚀首先出现在节线附近的齿面上。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0139",
+    "seq": 139,
+    "type": "single_choice",
+    "stem": "胶合主要出现在____的闭式齿轮传动中。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "低速轻载"
+      },
+      {
+        "label": "B",
+        "text": "高速重载"
+      },
+      {
+        "label": "C",
+        "text": "低速重载"
+      },
+      {
+        "label": "D",
+        "text": "高速轻载"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0140",
+    "seq": 140,
+    "type": "multiple_choice",
+    "stem": "提高齿轮抗断齿能力的措施包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "增大齿根过渡圆角半径"
+      },
+      {
+        "label": "B",
+        "text": "在齿根处喷丸强化"
+      },
+      {
+        "label": "C",
+        "text": "选用韧性好的材料"
+      },
+      {
+        "label": "D",
+        "text": "减小轴及支承的刚性"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0141",
+    "seq": 141,
+    "type": "single_choice",
+    "stem": "疲劳折断和过载折断相比，过载折断多发生于____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "渗碳齿轮"
+      },
+      {
+        "label": "B",
+        "text": "铸铁齿轮、整体淬火齿轮"
+      },
+      {
+        "label": "C",
+        "text": "调质齿轮"
+      },
+      {
+        "label": "D",
+        "text": "表面淬火齿轮"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0142",
+    "seq": 142,
+    "type": "true_false",
+    "stem": "疲劳折断是由于齿轮长期重复受载、齿根弯曲应力超过许用弯曲应力，逐渐产生并扩展裂纹导致的。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0143",
+    "seq": 143,
+    "type": "single_choice",
+    "stem": "齿面点蚀首先出现在节线附近，主要原因之一是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "节线处齿面硬度最低"
+      },
+      {
+        "label": "B",
+        "text": "节线处相对滑动速度小，不易形成润滑油膜"
+      },
+      {
+        "label": "C",
+        "text": "节线处压力角最大"
+      },
+      {
+        "label": "D",
+        "text": "节线处模数最小"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0144",
+    "seq": 144,
+    "type": "multiple_choice",
+    "stem": "提高齿轮抗点蚀能力的措施包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "提高齿面硬度、降低粗糙度"
+      },
+      {
+        "label": "B",
+        "text": "提高润滑油粘度"
+      },
+      {
+        "label": "C",
+        "text": "采用正传动增大综合曲率半径"
+      },
+      {
+        "label": "D",
+        "text": "改用开式传动"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0145",
+    "seq": 145,
+    "type": "single_choice",
+    "stem": "磨粒磨损常出现在____齿轮传动中。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "闭式"
+      },
+      {
+        "label": "B",
+        "text": "开式"
+      },
+      {
+        "label": "C",
+        "text": "高速重载"
+      },
+      {
+        "label": "D",
+        "text": "低速轻载闭式"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0146",
+    "seq": 146,
+    "type": "fill_blank",
+    "stem": "齿轮胶合是由于齿面间压力大、速度高，摩擦功耗产生高温破坏____，使两齿面金属直接接触粘焊。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "油膜"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0147",
+    "seq": 147,
+    "type": "single_choice",
+    "stem": "齿面塑性变形容易发生在____的齿轮传动中。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "高速轻载"
+      },
+      {
+        "label": "B",
+        "text": "低速重载或频繁启动"
+      },
+      {
+        "label": "C",
+        "text": "闭式软齿面"
+      },
+      {
+        "label": "D",
+        "text": "开式高速"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0148",
+    "seq": 148,
+    "type": "single_choice",
+    "stem": "一般直齿圆柱齿轮的齿数比u不宜超过____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "2"
+      },
+      {
+        "label": "B",
+        "text": "5"
+      },
+      {
+        "label": "C",
+        "text": "10"
+      },
+      {
+        "label": "D",
+        "text": "20"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0149",
+    "seq": 149,
+    "type": "true_false",
+    "stem": "对于闭式软齿面齿轮传动，为提高传动平稳性和降低齿高，可适当增大小齿轮齿数、相应减小模数。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "gear_failure",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0150",
+    "seq": 150,
+    "type": "single_choice",
+    "stem": "蜗杆蜗轮传动的失效多发生在____上。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "蜗杆"
+      },
+      {
+        "label": "B",
+        "text": "蜗轮"
+      },
+      {
+        "label": "C",
+        "text": "两者概率相等"
+      },
+      {
+        "label": "D",
+        "text": "轴承"
+      }
+    ],
+    "answer": "B",
+    "explanation": "蜗杆螺旋齿的强度比蜗轮轮齿的强度高，所以失效多发生在蜗轮上。",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0151",
+    "seq": 151,
+    "type": "true_false",
+    "stem": "蜗轮常采用青铜制造，是为了获得良好的减摩、耐磨和抗胶合性能。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0152",
+    "seq": 152,
+    "type": "single_choice",
+    "stem": "蜗杆传动闭式设计中，除接触疲劳强度设计和弯曲疲劳强度校核外，还需要进行____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "振动校核"
+      },
+      {
+        "label": "B",
+        "text": "热平衡计算"
+      },
+      {
+        "label": "C",
+        "text": "刚度校核"
+      },
+      {
+        "label": "D",
+        "text": "冲击校核"
+      }
+    ],
+    "answer": "B",
+    "explanation": "蜗杆传动滑动速度大、发热量大，闭式传动需额外进行热平衡计算。",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0153",
+    "seq": 153,
+    "type": "single_choice",
+    "stem": "蜗杆传动的受力分析中，作用在蜗杆和蜗轮上的三对分力彼此关系为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "大小相等，方向相同"
+      },
+      {
+        "label": "B",
+        "text": "大小相等，方向相反"
+      },
+      {
+        "label": "C",
+        "text": "大小不等，方向相反"
+      },
+      {
+        "label": "D",
+        "text": "无固定关系"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0154",
+    "seq": 154,
+    "type": "single_choice",
+    "stem": "蜗杆传动因齿面间相对滑动速度大，最容易导致的失效是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "胶合"
+      },
+      {
+        "label": "B",
+        "text": "过载折断"
+      },
+      {
+        "label": "C",
+        "text": "疲劳折断"
+      },
+      {
+        "label": "D",
+        "text": "塑性变形"
+      }
+    ],
+    "answer": "A",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0155",
+    "seq": 155,
+    "type": "true_false",
+    "stem": "蜗杆一般采用碳素钢或合金钢制造并经淬火处理，以获得较高的齿面硬度。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0156",
+    "seq": 156,
+    "type": "single_choice",
+    "stem": "开式蜗杆传动因磨损速度大于点蚀速度，设计时主要按____进行。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "接触疲劳强度设计"
+      },
+      {
+        "label": "B",
+        "text": "弯曲强度设计"
+      },
+      {
+        "label": "C",
+        "text": "热平衡计算"
+      },
+      {
+        "label": "D",
+        "text": "刚度设计"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "worm_gear",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0157",
+    "seq": 157,
+    "type": "single_choice",
+    "stem": "摩擦型带传动过载时会____，从而保护其他零件不受损坏。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "断裂"
+      },
+      {
+        "label": "B",
+        "text": "打滑"
+      },
+      {
+        "label": "C",
+        "text": "跳齿"
+      },
+      {
+        "label": "D",
+        "text": "卡死"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0158",
+    "seq": 158,
+    "type": "single_choice",
+    "stem": "链传动磨损后容易发生的失效现象是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "打滑"
+      },
+      {
+        "label": "B",
+        "text": "跳齿"
+      },
+      {
+        "label": "C",
+        "text": "弹性滑动"
+      },
+      {
+        "label": "D",
+        "text": "整体断裂"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0159",
+    "seq": 159,
+    "type": "true_false",
+    "stem": "链传动没有弹性滑动和打滑现象，能保持准确的平均传动比。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0160",
+    "seq": 160,
+    "type": "fill_blank",
+    "stem": "带传动一般推荐带速v=____m/s为最佳带速区间。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "20~25"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0161",
+    "seq": 161,
+    "type": "single_choice",
+    "stem": "滚子链的磨损主要发生在____的接触面上。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "滚子和套筒"
+      },
+      {
+        "label": "B",
+        "text": "销轴和套筒"
+      },
+      {
+        "label": "C",
+        "text": "内链板和外链板"
+      },
+      {
+        "label": "D",
+        "text": "链轮和滚子"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0162",
+    "seq": 162,
+    "type": "single_choice",
+    "stem": "带传动分为摩擦型和____两类。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "链啮合型"
+      },
+      {
+        "label": "B",
+        "text": "啮合型"
+      },
+      {
+        "label": "C",
+        "text": "齿轮型"
+      },
+      {
+        "label": "D",
+        "text": "滚动型"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0163",
+    "seq": 163,
+    "type": "multiple_choice",
+    "stem": "摩擦型带传动的优点包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "能缓冲吸振、传动平稳"
+      },
+      {
+        "label": "B",
+        "text": "过载打滑、保护其他零件"
+      },
+      {
+        "label": "C",
+        "text": "结构简单、成本较低"
+      },
+      {
+        "label": "D",
+        "text": "瞬时传动比恒定"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0164",
+    "seq": 164,
+    "type": "true_false",
+    "stem": "带轮直径减小会增加带的弯曲应力，导致疲劳寿命降低。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0165",
+    "seq": 165,
+    "type": "single_choice",
+    "stem": "传动比过大会导致带轮包角____，容易打滑。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "增大"
+      },
+      {
+        "label": "B",
+        "text": "减小"
+      },
+      {
+        "label": "C",
+        "text": "不变"
+      },
+      {
+        "label": "D",
+        "text": "先增大后减小"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0166",
+    "seq": 166,
+    "type": "fill_blank",
+    "stem": "带传动的传动比一般不超过____，推荐值为2~5。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "7"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0167",
+    "seq": 167,
+    "type": "single_choice",
+    "stem": "与摩擦型带传动相比，链传动的主要优点是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "过载保护能力强"
+      },
+      {
+        "label": "B",
+        "text": "无弹性滑动，能保持准确的平均传动比"
+      },
+      {
+        "label": "C",
+        "text": "瞬时传动比恒定"
+      },
+      {
+        "label": "D",
+        "text": "可用于任意角度交错轴传动"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0168",
+    "seq": 168,
+    "type": "true_false",
+    "stem": "链传动只能用于两平行轴间的同向回转传动。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0169",
+    "seq": 169,
+    "type": "single_choice",
+    "stem": "滚子链中，滚子和轮齿间主要发生____摩擦，可减轻齿廓磨损。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "滑动"
+      },
+      {
+        "label": "B",
+        "text": "滚动"
+      },
+      {
+        "label": "C",
+        "text": "混合"
+      },
+      {
+        "label": "D",
+        "text": "静止"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0170",
+    "seq": 170,
+    "type": "single_choice",
+    "stem": "内导板齿形链适用于____场合。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "低速轻载"
+      },
+      {
+        "label": "B",
+        "text": "高速及重载传动"
+      },
+      {
+        "label": "C",
+        "text": "链轮宽度很小"
+      },
+      {
+        "label": "D",
+        "text": "开式传动"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0171",
+    "seq": 171,
+    "type": "fill_blank",
+    "stem": "链条磨损导致链轮节圆增大，最终会产生____或脱链而使传动失效。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "跳齿"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0172",
+    "seq": 172,
+    "type": "single_choice",
+    "stem": "链传动的承载能力主要以____为依据。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "链轮的强度"
+      },
+      {
+        "label": "B",
+        "text": "链的强度和寿命"
+      },
+      {
+        "label": "C",
+        "text": "电机功率"
+      },
+      {
+        "label": "D",
+        "text": "润滑方式"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "belt_chain_friction_drive",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0173",
+    "seq": 173,
+    "type": "single_choice",
+    "stem": "转轴设计时，首先按____估算轴的直径。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "精确弯矩计算"
+      },
+      {
+        "label": "B",
+        "text": "扭转强度或经验公式"
+      },
+      {
+        "label": "C",
+        "text": "振动稳定性计算"
+      },
+      {
+        "label": "D",
+        "text": "刚度计算"
+      }
+    ],
+    "answer": "B",
+    "explanation": "因为轴的结构尺寸未定前无法求出弯矩，所以先按扭转强度/经验公式估算直径，再做结构设计，最后精确校核。",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0174",
+    "seq": 174,
+    "type": "true_false",
+    "stem": "应力集中是轴产生疲劳破坏的主要原因。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0175",
+    "seq": 175,
+    "type": "fill_blank",
+    "stem": "曲轴常用于____式机械中，是内燃机等机器的专用零件。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "往复"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0176",
+    "seq": 176,
+    "type": "single_choice",
+    "stem": "通过碾压、喷丸对轴表面进行强化处理，可使轴表层产生____，从而提高抗疲劳能力。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "残余拉应力"
+      },
+      {
+        "label": "B",
+        "text": "预压应力"
+      },
+      {
+        "label": "C",
+        "text": "硬化层"
+      },
+      {
+        "label": "D",
+        "text": "氧化膜"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0177",
+    "seq": 177,
+    "type": "single_choice",
+    "stem": "根据受载荷性质不同，直轴可分为心轴、转轴和____三种。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "曲轴"
+      },
+      {
+        "label": "B",
+        "text": "传动轴"
+      },
+      {
+        "label": "C",
+        "text": "软轴"
+      },
+      {
+        "label": "D",
+        "text": "空心轴"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0178",
+    "seq": 178,
+    "type": "true_false",
+    "stem": "钢丝软轴不受空间限制，能将扭转或旋转运动灵活传到任何所需位置。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0179",
+    "seq": 179,
+    "type": "single_choice",
+    "stem": "轴的结构设计不需要重点考虑的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "便于加工、测量、装配和维修"
+      },
+      {
+        "label": "B",
+        "text": "减小应力集中"
+      },
+      {
+        "label": "C",
+        "text": "采用键连接时键槽应设计在同一加工直线上"
+      },
+      {
+        "label": "D",
+        "text": "尽量增大轴的直径以提高安全性"
+      }
+    ],
+    "answer": "D",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0180",
+    "seq": 180,
+    "type": "multiple_choice",
+    "stem": "轴的工作能力计算可能包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "强度计算"
+      },
+      {
+        "label": "B",
+        "text": "刚度计算"
+      },
+      {
+        "label": "C",
+        "text": "振动稳定性计算"
+      },
+      {
+        "label": "D",
+        "text": "外观设计"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0181",
+    "seq": 181,
+    "type": "fill_blank",
+    "stem": "轴端、轴颈与轴肩过渡部分应加工出倒角或____，以减小应力集中、便于装配。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "过渡圆角"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0182",
+    "seq": 182,
+    "type": "single_choice",
+    "stem": "合金钢制作的轴相比碳钢，对应力集中____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "更不敏感"
+      },
+      {
+        "label": "B",
+        "text": "更敏感"
+      },
+      {
+        "label": "C",
+        "text": "完全不敏感"
+      },
+      {
+        "label": "D",
+        "text": "敏感程度相同"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "shaft_design",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0183",
+    "seq": 183,
+    "type": "single_choice",
+    "stem": "承受纯轴向载荷时，一般选用____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "深沟球轴承"
+      },
+      {
+        "label": "B",
+        "text": "圆柱滚子轴承"
+      },
+      {
+        "label": "C",
+        "text": "推力轴承"
+      },
+      {
+        "label": "D",
+        "text": "滚针轴承"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0184",
+    "seq": 184,
+    "type": "single_choice",
+    "stem": "滚动轴承基本额定寿命对应的可靠度是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "100%"
+      },
+      {
+        "label": "B",
+        "text": "99%"
+      },
+      {
+        "label": "C",
+        "text": "90%"
+      },
+      {
+        "label": "D",
+        "text": "50%"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0185",
+    "seq": 185,
+    "type": "true_false",
+    "stem": "转速越高，滚动轴承润滑应选用粘度越高的润滑油。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "转速越高应选用粘度越低的润滑油；载荷越大才应选用粘度越高的润滑油。",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0186",
+    "seq": 186,
+    "type": "fill_blank",
+    "stem": "衡量滚动轴承承载能力的主要指标是基本额定____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "动载荷"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0187",
+    "seq": 187,
+    "type": "single_choice",
+    "stem": "对于转速很低、承受很大冲击载荷的轴承，主要采用的计算准则是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "寿命计算"
+      },
+      {
+        "label": "B",
+        "text": "静强度计算"
+      },
+      {
+        "label": "C",
+        "text": "极限转速校验"
+      },
+      {
+        "label": "D",
+        "text": "热平衡计算"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0188",
+    "seq": 188,
+    "type": "single_choice",
+    "stem": "转速较高、载荷较小、要求旋转精度较高时，宜选用____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "滚子轴承"
+      },
+      {
+        "label": "B",
+        "text": "球轴承"
+      },
+      {
+        "label": "C",
+        "text": "推力轴承"
+      },
+      {
+        "label": "D",
+        "text": "滑动轴承"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0189",
+    "seq": 189,
+    "type": "single_choice",
+    "stem": "需要沿轴向安装和拆卸轴承，且轴承座不是剖分式时，宜优先选用____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "深沟球轴承"
+      },
+      {
+        "label": "B",
+        "text": "内外圈可分离的轴承"
+      },
+      {
+        "label": "C",
+        "text": "调心球轴承"
+      },
+      {
+        "label": "D",
+        "text": "推力轴承"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0190",
+    "seq": 190,
+    "type": "true_false",
+    "stem": "保持架的主要作用是均匀隔开滚动体，避免相邻滚动体接触产生较大相对滑动而磨损。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0191",
+    "seq": 191,
+    "type": "fill_blank",
+    "stem": "滚动体与外圈接触处法线与轴承径向平面之间的夹角称为轴承的____。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "公称接触角"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0192",
+    "seq": 192,
+    "type": "multiple_choice",
+    "stem": "与滑动轴承相比，滚动轴承的优点包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "摩擦系数小，启动力矩小"
+      },
+      {
+        "label": "B",
+        "text": "属于标准件，互换性好"
+      },
+      {
+        "label": "C",
+        "text": "抗冲击能力强"
+      },
+      {
+        "label": "D",
+        "text": "润滑简单，维护成本低"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "explanation": "滚动轴承的缺点恰恰是抗冲击能力较差，不能选C。",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0193",
+    "seq": 193,
+    "type": "true_false",
+    "stem": "轴承基本额定寿命是以同批试验轴承中寿命最长的一个作为标准。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "基本额定寿命是10%轴承发生点蚀破坏前的转数（可靠度90%），不是取最长寿命。",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0194",
+    "seq": 194,
+    "type": "single_choice",
+    "stem": "润滑脂的填充量一般以填充轴承和轴承壳体空间的____为宜。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "1/5到1/4"
+      },
+      {
+        "label": "B",
+        "text": "1/3到1/2"
+      },
+      {
+        "label": "C",
+        "text": "2/3到3/4"
+      },
+      {
+        "label": "D",
+        "text": "全部填满"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0195",
+    "seq": 195,
+    "type": "single_choice",
+    "stem": "载荷越大时，滚动轴承润滑应选用____的润滑油。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "粘度越低"
+      },
+      {
+        "label": "B",
+        "text": "粘度越高"
+      },
+      {
+        "label": "C",
+        "text": "与载荷无关"
+      },
+      {
+        "label": "D",
+        "text": "粘度适中固定值"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "rolling_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0196",
+    "seq": 196,
+    "type": "single_choice",
+    "stem": "在所有轴承材料中，嵌入性及摩擦顺应性最好的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "轴承合金"
+      },
+      {
+        "label": "B",
+        "text": "锡青铜"
+      },
+      {
+        "label": "C",
+        "text": "铝基轴承合金"
+      },
+      {
+        "label": "D",
+        "text": "粉末冶金材料"
+      }
+    ],
+    "answer": "A",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0197",
+    "seq": 197,
+    "type": "true_false",
+    "stem": "轴承合金强度很高，可以单独制作整体轴瓦。",
+    "stem_images": [],
+    "options": [],
+    "answer": false,
+    "explanation": "轴承合金强度很低，不能单独制作轴瓦，只能贴附在青铜、钢或铸铁轴瓦上作轴承衬。",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0198",
+    "seq": 198,
+    "type": "single_choice",
+    "stem": "材料通过表层弹塑性变形补偿轴颈挠曲和初始配合不良的能力称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "嵌入性"
+      },
+      {
+        "label": "B",
+        "text": "磨合性"
+      },
+      {
+        "label": "C",
+        "text": "摩擦顺应性"
+      },
+      {
+        "label": "D",
+        "text": "减摩性"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0199",
+    "seq": 199,
+    "type": "fill_blank",
+    "stem": "多孔质金属材料轴承因孔隙中浸有润滑油、具有自润滑性，故称为____轴承。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "含油"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0200",
+    "seq": 200,
+    "type": "single_choice",
+    "stem": "轴颈与轴瓦直接接触时防止发生粘附和形成边界润滑的性能称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "减摩性"
+      },
+      {
+        "label": "B",
+        "text": "摩擦相容性"
+      },
+      {
+        "label": "C",
+        "text": "嵌入性"
+      },
+      {
+        "label": "D",
+        "text": "磨合性"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0201",
+    "seq": 201,
+    "type": "single_choice",
+    "stem": "材料允许混入润滑剂中的硬质颗粒嵌入、防止刮伤或磨粒磨损的能力称为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "摩擦顺应性"
+      },
+      {
+        "label": "B",
+        "text": "嵌入性"
+      },
+      {
+        "label": "C",
+        "text": "磨合性"
+      },
+      {
+        "label": "D",
+        "text": "减摩性"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0202",
+    "seq": 202,
+    "type": "true_false",
+    "stem": "锡青铜的减摩性在铜合金中最好、应用较广，但硬度较高、磨合性及嵌入性较差。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0203",
+    "seq": 203,
+    "type": "single_choice",
+    "stem": "适用于高速、重载轴承，抗粘附能力强的铜合金是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "锡青铜"
+      },
+      {
+        "label": "B",
+        "text": "铅青铜"
+      },
+      {
+        "label": "C",
+        "text": "铝青铜"
+      },
+      {
+        "label": "D",
+        "text": "黄铜"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0204",
+    "seq": 204,
+    "type": "single_choice",
+    "stem": "灰铸铁作为轴承材料的主要缺点是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "价格昂贵"
+      },
+      {
+        "label": "B",
+        "text": "性脆、磨合性差"
+      },
+      {
+        "label": "C",
+        "text": "导热性差"
+      },
+      {
+        "label": "D",
+        "text": "不能形成润滑层"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0205",
+    "seq": 205,
+    "type": "fill_blank",
+    "stem": "粉末冶金轴承材料的孔隙约占体积的____%~____%。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "10",
+      "35"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0206",
+    "seq": 206,
+    "type": "single_choice",
+    "stem": "非金属轴承材料（如塑料）的主要缺点是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "减摩性差"
+      },
+      {
+        "label": "B",
+        "text": "耐磨性差"
+      },
+      {
+        "label": "C",
+        "text": "强度和导热性较差"
+      },
+      {
+        "label": "D",
+        "text": "耐腐蚀性差"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0207",
+    "seq": 207,
+    "type": "single_choice",
+    "stem": "润滑剂按物态可分为气体、液体、半固体和____四种基本类型。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "胶体"
+      },
+      {
+        "label": "B",
+        "text": "固体"
+      },
+      {
+        "label": "C",
+        "text": "混合态"
+      },
+      {
+        "label": "D",
+        "text": "等离子体"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "sliding_bearing",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0208",
+    "seq": 208,
+    "type": "single_choice",
+    "stem": "牙嵌式离合器和摩擦式离合器相比，具有过载打滑保护能力的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "牙嵌式离合器"
+      },
+      {
+        "label": "B",
+        "text": "摩擦式离合器"
+      },
+      {
+        "label": "C",
+        "text": "两者都有"
+      },
+      {
+        "label": "D",
+        "text": "两者都没有"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0209",
+    "seq": 209,
+    "type": "true_false",
+    "stem": "梯形齿牙嵌式离合器能自行补偿磨损产生的间隙。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0210",
+    "seq": 210,
+    "type": "single_choice",
+    "stem": "牙嵌式离合器牙形中，承载能力最大但仅能单向工作的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "矩形齿"
+      },
+      {
+        "label": "B",
+        "text": "三角形齿"
+      },
+      {
+        "label": "C",
+        "text": "梯形齿"
+      },
+      {
+        "label": "D",
+        "text": "锯齿形"
+      }
+    ],
+    "answer": "D",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0211",
+    "seq": 211,
+    "type": "fill_blank",
+    "stem": "离合器主要由主动部分、从动部分、接合部分和____组成。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "操纵部分"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0212",
+    "seq": 212,
+    "type": "single_choice",
+    "stem": "离合器按控制方式分类，能在特定工作条件下自动接合分离的是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "操纵式离合器"
+      },
+      {
+        "label": "B",
+        "text": "自动式离合器"
+      },
+      {
+        "label": "C",
+        "text": "机械式离合器"
+      },
+      {
+        "label": "D",
+        "text": "电磁式离合器"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0213",
+    "seq": 213,
+    "type": "true_false",
+    "stem": "矩形齿牙嵌式离合器磨损后间隙无法补偿，难以接合，只能用于静止状态下手动离合。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0214",
+    "seq": 214,
+    "type": "single_choice",
+    "stem": "三角形齿牙嵌式离合器一般用于传递____转矩的低速离合器。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "大"
+      },
+      {
+        "label": "B",
+        "text": "小"
+      },
+      {
+        "label": "C",
+        "text": "中等"
+      },
+      {
+        "label": "D",
+        "text": "不确定"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0215",
+    "seq": 215,
+    "type": "single_choice",
+    "stem": "电磁牙嵌离合器通常采用嵌入方便的____细牙，便于遥控和程序控制。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "矩形"
+      },
+      {
+        "label": "B",
+        "text": "三角形"
+      },
+      {
+        "label": "C",
+        "text": "梯形"
+      },
+      {
+        "label": "D",
+        "text": "锯齿形"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0216",
+    "seq": 216,
+    "type": "single_choice",
+    "stem": "摩擦式离合器过载打滑时，摩擦消耗的功会转变为____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "电能"
+      },
+      {
+        "label": "B",
+        "text": "热量"
+      },
+      {
+        "label": "C",
+        "text": "动能"
+      },
+      {
+        "label": "D",
+        "text": "势能"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0217",
+    "seq": 217,
+    "type": "fill_blank",
+    "stem": "摩擦式离合器最常见的结构形式是____摩擦离合器。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "圆盘式"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "clutch",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0218",
+    "seq": 218,
+    "type": "single_choice",
+    "stem": "弹簧按承受载荷不同可分为压缩弹簧、拉伸弹簧、扭转弹簧和____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "板弹簧"
+      },
+      {
+        "label": "B",
+        "text": "弯曲弹簧"
+      },
+      {
+        "label": "C",
+        "text": "碟形弹簧"
+      },
+      {
+        "label": "D",
+        "text": "环形弹簧"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0219",
+    "seq": 219,
+    "type": "true_false",
+    "stem": "弹簧丝直径大于12mm时，碳素弹簧钢不容易淬透。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0220",
+    "seq": 220,
+    "type": "single_choice",
+    "stem": "螺旋压缩弹簧特性曲线中，Flim表示____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "最小工作载荷"
+      },
+      {
+        "label": "B",
+        "text": "最大工作载荷"
+      },
+      {
+        "label": "C",
+        "text": "极限载荷"
+      },
+      {
+        "label": "D",
+        "text": "初始载荷"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0221",
+    "seq": 221,
+    "type": "fill_blank",
+    "stem": "弹簧按载荷性质分为三类，其中Ⅰ类是受变载荷作用次数在____次以上或很重要的弹簧。",
+    "stem_images": [],
+    "options": [],
+    "answer": [
+      "10^6"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0222",
+    "seq": 222,
+    "type": "multiple_choice",
+    "stem": "弹簧的功用包括____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "缓冲吸振"
+      },
+      {
+        "label": "B",
+        "text": "控制运动"
+      },
+      {
+        "label": "C",
+        "text": "储能输出"
+      },
+      {
+        "label": "D",
+        "text": "测力"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0223",
+    "seq": 223,
+    "type": "single_choice",
+    "stem": "利用弹簧变形吸收冲击和振动能量，属于弹簧的____功用。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "控制运动"
+      },
+      {
+        "label": "B",
+        "text": "缓和冲击和吸收振动"
+      },
+      {
+        "label": "C",
+        "text": "储存及输出能量"
+      },
+      {
+        "label": "D",
+        "text": "测量力的大小"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0224",
+    "seq": 224,
+    "type": "single_choice",
+    "stem": "弹簧秤利用弹簧变形量与载荷呈线性关系，属于弹簧的____功用。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "控制运动"
+      },
+      {
+        "label": "B",
+        "text": "储能输出"
+      },
+      {
+        "label": "C",
+        "text": "测量力的大小"
+      },
+      {
+        "label": "D",
+        "text": "改变自振频率"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0225",
+    "seq": 225,
+    "type": "true_false",
+    "stem": "碟形弹簧和环形弹簧具有很高的缓冲吸振能力，多用于重型机械的缓冲装置。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0226",
+    "seq": 226,
+    "type": "single_choice",
+    "stem": "盘弹簧（平面涡卷弹簧）轴向尺寸很小，常用作____的储能装置。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "车辆悬挂"
+      },
+      {
+        "label": "B",
+        "text": "仪器和钟表"
+      },
+      {
+        "label": "C",
+        "text": "重型机械缓冲"
+      },
+      {
+        "label": "D",
+        "text": "发动机支撑"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0227",
+    "seq": 227,
+    "type": "single_choice",
+    "stem": "板弹簧主要用作____的减振装置。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "仪器仪表"
+      },
+      {
+        "label": "B",
+        "text": "各种车辆"
+      },
+      {
+        "label": "C",
+        "text": "钟表"
+      },
+      {
+        "label": "D",
+        "text": "安全阀"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0228",
+    "seq": 228,
+    "type": "single_choice",
+    "stem": "合金弹簧钢相比碳素弹簧钢，主要优势是____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "价格更便宜"
+      },
+      {
+        "label": "B",
+        "text": "适用于变载荷、冲击载荷或高温场合"
+      },
+      {
+        "label": "C",
+        "text": "不需要热处理"
+      },
+      {
+        "label": "D",
+        "text": "密度更小"
+      }
+    ],
+    "answer": "B",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0229",
+    "seq": 229,
+    "type": "true_false",
+    "stem": "有初应力的拉伸弹簧，只有当工作载荷大于初拉力F0时，弹簧才开始伸长。",
+    "stem_images": [],
+    "options": [],
+    "answer": true,
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0230",
+    "seq": 230,
+    "type": "single_choice",
+    "stem": "弹簧特性曲线中，Fmin表示____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "极限载荷"
+      },
+      {
+        "label": "B",
+        "text": "最大工作载荷"
+      },
+      {
+        "label": "C",
+        "text": "预加的初始载荷（最小工作载荷）"
+      },
+      {
+        "label": "D",
+        "text": "平均载荷"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  },
+  {
+    "id": "ai_q_0231",
+    "seq": 231,
+    "type": "single_choice",
+    "stem": "弹簧按载荷性质分类中，基本上受静载荷的弹簧属于____。",
+    "stem_images": [],
+    "options": [
+      {
+        "label": "A",
+        "text": "Ⅰ类"
+      },
+      {
+        "label": "B",
+        "text": "Ⅱ类"
+      },
+      {
+        "label": "C",
+        "text": "Ⅲ类"
+      },
+      {
+        "label": "D",
+        "text": "Ⅳ类"
+      }
+    ],
+    "answer": "C",
+    "explanation": "",
+    "difficulty": "中",
+    "knowledge_point_id": "spring",
+    "source": "ai-gen"
+  }
+]

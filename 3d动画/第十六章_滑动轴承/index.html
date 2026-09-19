@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>滑动轴承 3D 展示</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #f4f6f9; color: #2a3140; font-family: -apple-system, "PingFang SC", sans-serif; overflow: hidden; }
+  #panel {
+    position: absolute; top: 12px; left: 12px; z-index: 10;
+    background: rgba(255,255,255,0.9); border: 1px solid #dde3ec; border-radius: 10px;
+    padding: 14px 16px; width: 300px; backdrop-filter: blur(4px);
+  }
+  #panel h1 { font-size: 14px; margin: 0 0 10px; font-weight: 600; }
+  .row { margin-bottom: 10px; }
+  .row label { display: flex; justify-content: space-between; font-size: 12px; color: #6b7684; margin-bottom: 4px; }
+  .row input[type=range] { width: 100%; accent-color: #2f6fed; }
+  #info { margin-top: 8px; padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 1.7;
+    background: #eaf1ff; color: #2f6fed; border: 1px solid #c9dcff; }
+  #hint { position: absolute; bottom: 12px; left: 12px; font-size: 11px; color: #9aa5b1; z-index: 10; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+  <div id="panel">
+    <h1>滑动轴承（轴颈偏心示意）</h1>
+    <div class="row">
+      <label><span>偏心率 ε = e/c</span><span id="epsVal"></span></label>
+      <input type="range" id="eps" min="0" max="0.9" step="0.02" value="0.5">
+    </div>
+    <div class="row">
+      <label><span>轴颈转速</span><span id="speedVal"></span></label>
+      <input type="range" id="speed" min="0.3" max="2.5" step="0.1" value="1.2">
+    </div>
+    <div id="info">
+      承受载荷后，轴颈在轴承孔内偏向一侧，偏心距e，间隙c=R轴承-R轴颈<br>
+      最小油膜厚度 hmin = c(1-ε)，ε=e/c 是描述轴承工作状态的重要参数<br>
+      ε→0：轴颈居中（轻载/高速）；ε→1：轴颈几乎贴到轴承壁（重载/低速，油膜濒临破裂）
+    </div>
+  </div>
+  <div id="hint">鼠标拖动旋转视角 · 滚轮缩放 · 右键拖动平移</div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

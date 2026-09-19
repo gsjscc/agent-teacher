@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>四连杆机构 3D 模拟器（本地原型）</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #f4f6f9; color: #2a3140; font-family: -apple-system, "PingFang SC", sans-serif; overflow: hidden; }
+  #panel {
+    position: absolute; top: 12px; left: 12px; z-index: 10;
+    background: rgba(255,255,255,0.9); border: 1px solid #dde3ec; border-radius: 10px;
+    padding: 14px 16px; width: 260px; backdrop-filter: blur(6px);
+    box-shadow: 0 4px 16px rgba(30,60,110,0.08);
+  }
+  #panel h1 { font-size: 14px; margin: 0 0 10px; font-weight: 600; color: #1c2433; }
+  .row { margin-bottom: 10px; }
+  .row label { display: flex; justify-content: space-between; font-size: 12px; color: #6b7684; margin-bottom: 4px; }
+  .row input[type=range] { width: 100%; accent-color: #2f6fed; }
+  #typeBadge {
+    margin-top: 8px; padding: 8px 10px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    background: #eaf1ff; color: #2f6fed; border: 1px solid #c9dcff;
+  }
+  #warn { margin-top: 8px; font-size: 12px; color: #e0555a; display: none; }
+  #hint { position: absolute; bottom: 12px; left: 12px; font-size: 11px; color: #9aa5b1; z-index: 10; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+  <div id="panel">
+    <h1>四连杆机构参数（拖动改变杆长）</h1>
+    <div class="row">
+      <label><span>机架 d (AD)</span><span id="dVal"></span></label>
+      <input type="range" id="d" min="0.6" max="3" step="0.05" value="2.2">
+    </div>
+    <div class="row">
+      <label><span>曲柄侧 a (AB)</span><span id="aVal"></span></label>
+      <input type="range" id="a" min="0.3" max="2.5" step="0.05" value="0.8">
+    </div>
+    <div class="row">
+      <label><span>连杆 b (BC)</span><span id="bVal"></span></label>
+      <input type="range" id="b" min="0.3" max="2.5" step="0.05" value="2.0">
+    </div>
+    <div class="row">
+      <label><span>摇杆侧 c (CD)</span><span id="cVal"></span></label>
+      <input type="range" id="c" min="0.3" max="2.5" step="0.05" value="1.6">
+    </div>
+    <div id="typeBadge">--</div>
+    <div id="warn">当前杆长组合无法闭合成四连杆（不满足三角不等式/圆相交条件）</div>
+  </div>
+  <div id="hint">鼠标拖动旋转视角 · 滚轮缩放 · 右键拖动平移</div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

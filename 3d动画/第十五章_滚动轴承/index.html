@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>滚动轴承 3D 模拟器</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #f4f6f9; color: #2a3140; font-family: -apple-system, "PingFang SC", sans-serif; overflow: hidden; }
+  #panel {
+    position: absolute; top: 12px; left: 12px; z-index: 10;
+    background: rgba(255,255,255,0.9); border: 1px solid #dde3ec; border-radius: 10px;
+    padding: 14px 16px; width: 290px; backdrop-filter: blur(4px);
+  }
+  #panel h1 { font-size: 14px; margin: 0 0 10px; font-weight: 600; }
+  .row { margin-bottom: 10px; }
+  .row label { display: flex; justify-content: space-between; font-size: 12px; color: #6b7684; margin-bottom: 4px; }
+  .row input[type=range] { width: 100%; accent-color: #2f6fed; }
+  #info { margin-top: 8px; padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 1.7;
+    background: #eaf1ff; color: #2f6fed; border: 1px solid #c9dcff; }
+  #hint { position: absolute; bottom: 12px; left: 12px; font-size: 11px; color: #9aa5b1; z-index: 10; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+  <div id="panel">
+    <h1>深沟球轴承（内圈旋转，外圈固定）</h1>
+    <div class="row">
+      <label><span>滚动体数量</span><span id="nVal"></span></label>
+      <input type="range" id="n" min="6" max="14" step="1" value="9">
+    </div>
+    <div class="row">
+      <label><span>内圈转速</span><span id="speedVal"></span></label>
+      <input type="range" id="speed" min="0.3" max="3" step="0.1" value="1.5">
+    </div>
+    <div id="info">
+      保持架（滚动体公转）角速度 ωc = ωi·ri/(ri+ro) = <b id="cageVal"></b><br>
+      滚动体自转角速度（纯滚动，无滑动假设）= <b id="ballVal"></b><br>
+      外圈固定不动；保持架把滚动体均匀隔开，避免相邻滚动体因相对滑动产生额外磨损
+    </div>
+  </div>
+  <div id="hint">鼠标拖动旋转视角 · 滚轮缩放 · 右键拖动平移</div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>
