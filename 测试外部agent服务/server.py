@@ -235,13 +235,6 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             conversation_memory.merge_platform_history(conversation_id, platform_history, student_id)
         conversation_context = conversation_memory.build_context_text(conversation_id)
 
-        # 学情字段先占位，等共享个性化层节点接入表B后由平台真实传进来
-        student_state = {
-            "mastery_level": data.get("mastery_level", "未学"),
-            "detail_level": data.get("detail_level", "中"),
-            "encourage_level": data.get("encourage_level", "中"),
-        }
-
         kp = classify_knowledge_point(message)
         if kp is None:
             reply = "这个问题好像不在《机械设计基础》已覆盖的知识点范围内，能换个说法或者说明具体想问哪部分吗？"
@@ -259,6 +252,23 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             self._send_json(200, response_payload)
             return
 
+        # 学情字段跟表B真正联动：按 student_id + 本轮命中的知识点id，去表B里查这个学生在
+        # 这个知识点上的当前掌握状态。放在这里（分类出kp之后）而不是分类之前，是因为表B是
+        # 按"学生-知识点"这个组合维度存的，没有具体kp就查不出针对性的那一行；student_id为空
+        # （没绑定系统变量，或访客未登录）时退化成"未学"，不报错断链路，跟conversation_id
+        # 的向后兼容策略一致。detail_level/encourage_level 表B目前没有对应字段，暂时保持默认值。
+        mastery_level = "未学"
+        if student_id:
+            profile_rows = get_profile(student_id).get("knowledge_points", [])
+            matched_row = next((r for r in profile_rows if r["knowledge_point_id"] == kp.id), None)
+            if matched_row:
+                mastery_level = matched_row["mastery_state"]
+        student_state = {
+            "mastery_level": mastery_level,
+            "detail_level": data.get("detail_level", "中"),
+            "encourage_level": data.get("encourage_level", "中"),
+        }
+
         result = generate_explanation_and_media(kp, message, student_state, conversation_context)
         media = result.get("media", {}) or {}
         reply = result.get("explanation", "")
@@ -272,6 +282,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         _log_agent_call("in_parsed", {
             "message": message, "conversation_id": conversation_id, "student_id": student_id,
             "has_platform_history": bool(platform_history), "classified_kp": kp.id,
+            "mastery_level": mastery_level,
         })
         _log_agent_call("out", response_payload)
         self._send_json(200, response_payload)
