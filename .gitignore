@@ -2,6 +2,7 @@
 pdf_extracted.txt
 测试外部agent服务/data/
 .env
+*.pem
 __pycache__/
 *.pyc
 测试外部agent服务/cloudflared
