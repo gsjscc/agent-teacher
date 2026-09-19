@@ -10,8 +10,10 @@
 """
 
 import json
+import logging
 import mimetypes
 import os
+from logging.handlers import RotatingFileHandler
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
@@ -27,6 +29,31 @@ TEXTBOOK_IMG_DIR = os.path.join(BASE_DIR, "..", "教材图片")
 QUIZ_DIR = os.path.join(BASE_DIR, "..", "题库")
 QUIZ_IMAGES_DIR = os.path.join(QUIZ_DIR, "images")
 QUIZ_BANK_PATH = os.path.join(QUIZ_DIR, "题库.json")
+
+# 请求/响应审计日志——用来排查"任务流插件节点实际发过来的内容 vs 我们本地curl测试"
+# 之间的差异（比如message被截断、conversation_id/student_id绑错变量等），这类问题只看
+# journalctl的access log（只有路径和状态码）根本查不出来，必须把请求体和分类结果落盘。
+# 日志文件本身跟其他 data/*.log 一样走 .gitignore（测试外部agent服务/*.log），不进版本库，
+# 进版本库的只有这段记录逻辑代码本身。
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+audit_logger = logging.getLogger("agent_audit")
+audit_logger.setLevel(logging.INFO)
+_audit_handler = RotatingFileHandler(
+    os.path.join(LOG_DIR, "agent_audit.log"), maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
+)
+_audit_handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+audit_logger.addHandler(_audit_handler)
+audit_logger.propagate = False  # 不重复往 journalctl 里再灌一份，那边已经有 log_message() 的访问日志
+
+
+def _log_agent_call(direction, payload):
+    """direction: 'in'（任务流插件节点发来的原始请求体）或 'out'（我们回给它的响应体）。
+    整个payload原样落盘成一行JSON，不做字段裁剪——排查问题时最怕的就是恰好少记了那个关键字段。"""
+    try:
+        audit_logger.info("%s %s", direction, json.dumps(payload, ensure_ascii=False))
+    except Exception as e:
+        audit_logger.info("%s <log serialization failed: %s>", direction, e)
 
 
 def _load_quiz_bank():
@@ -187,6 +214,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             return
         length = int(self.headers.get("Content-Length", 0))
         raw = self.rfile.read(length) if length else b"{}"
+        _log_agent_call("in_raw", {"content_length": length, "raw": raw.decode("utf-8", errors="replace")})
         try:
             data = json.loads(raw.decode("utf-8"))
         except Exception:
@@ -218,23 +246,35 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         if kp is None:
             reply = "这个问题好像不在《机械设计基础》已覆盖的知识点范围内，能换个说法或者说明具体想问哪部分吗？"
             conversation_memory.append_turn(conversation_id, message, reply, student_id)
-            self._send_json(200, {
+            response_payload = {
                 "reply": reply,
                 "content_id": "none",
                 "knowledge_point": None,
+            }
+            _log_agent_call("in_parsed", {
+                "message": message, "conversation_id": conversation_id, "student_id": student_id,
+                "has_platform_history": bool(platform_history), "classified_kp": None,
             })
+            _log_agent_call("out", response_payload)
+            self._send_json(200, response_payload)
             return
 
         result = generate_explanation_and_media(kp, message, student_state, conversation_context)
         media = result.get("media", {}) or {}
         reply = result.get("explanation", "")
         conversation_memory.append_turn(conversation_id, message, reply, student_id)
-        self._send_json(200, {
+        response_payload = {
             "reply": reply,
             "content_id": media.get("content_id", "none"),
             "media_reason": media.get("reason", ""),
             "knowledge_point": kp.id,
+        }
+        _log_agent_call("in_parsed", {
+            "message": message, "conversation_id": conversation_id, "student_id": student_id,
+            "has_platform_history": bool(platform_history), "classified_kp": kp.id,
         })
+        _log_agent_call("out", response_payload)
+        self._send_json(200, response_payload)
 
     # ------------------------------------------------------------------
     # POST /answer：车道A/C的判断节点判完对错后调这个接口，按CDM(Q矩阵)+Elo

@@ -8,3 +8,4 @@ __pycache__/
 测试外部agent服务/cloudflared
 测试外部agent服务/bin/
 测试外部agent服务/*.log
+测试外部agent服务/logs/
