@@ -24,6 +24,8 @@
 import json
 import math
 import os
+import tempfile
+import threading
 import time
 from typing import Optional
 
@@ -58,12 +60,27 @@ REVIEW_RETENTION_THRESHOLD = 0.85  # 预估记忆保持率跌破这个值，判�
 
 _KP_NAME_BY_ID = {kp.id: kp.name for kp in KNOWLEDGE_POINTS}
 
+# server.py 用 ThreadingHTTPServer（同进程多线程），两个学生同时答题时如果都各自
+# "读整个表B JSON -> 改内存 -> 整个写回"，后写的那个会把先写的更新覆盖掉（丢失更新问题）。
+# 用一把进程内的锁把"读-改-写"整个过程串行化即可解决——不需要引入外部依赖或跨进程文件锁，
+# 因为目前就是单进程部署（同一台机器上一个systemd服务），锁的粒度按数据文件区分，
+# 避免答题更新和信号写入互相不必要地阻塞。
+_mastery_lock = threading.Lock()
+
 
 # ----------------------------------------------------------------------
 # 题库加载 + Q矩阵（带缓存，1220题不大，进程内常驻即可）
 # ----------------------------------------------------------------------
 _question_index: Optional[dict] = None
 _q_matrix_cache: dict = {}
+# get_q_matrix() 的缓存字典是全局共享的、并发下没有天然保护：多个线程第一次同时问同一道题时
+# 都会判定"缓存未命中"，都各自发起真实LLM分类请求，谁的网络请求先完成谁的结果就先写进缓存，
+# 但完成顺序不确定——如果一次调用因为高并发下超时/网络问题降级成关键词匹配、而这道题在题库里
+# 又没有knowledge_point_id兜底字段，就会分类出空列表；空列表一旦被写进缓存就是"一次失败、
+# 永久失败"（在压测里实测到：本该更新30次的表B只更新了18次，另外12次全部命中了这个空缓存）。
+# 用锁串行化"查缓存->分类->写缓存"，并且只缓存非空结果——分类失败/超时不应该被当成"这题真的
+# 没有知识点"钉死下来，下次请求应该有机会重新分类。
+_q_matrix_lock = threading.Lock()
 
 
 def _load_questions() -> dict:
@@ -84,18 +101,32 @@ def get_q_matrix(question_id: str) -> list:
     """
     if question_id in _q_matrix_cache:
         return _q_matrix_cache[question_id]
-    questions = _load_questions()
-    q = questions.get(question_id)
-    if not q:
-        _q_matrix_cache[question_id] = []
-        return []
-    kps = classify_knowledge_points_llm(q.get("stem", ""))
-    kp_ids = [kp.id for kp in kps]
-    # 兜底：多标签分类没命中时，退回题库原有的单标签 knowledge_point_id（parse_question_bank.py 打的）
-    if not kp_ids and q.get("knowledge_point_id"):
-        kp_ids = [q["knowledge_point_id"]]
-    _q_matrix_cache[question_id] = kp_ids
-    return kp_ids
+
+    with _q_matrix_lock:
+        # 双重检查：进锁前的判断只是为了避免每次都抢锁，真正决定"要不要重新分类"的判断
+        # 必须在拿到锁之后再做一次——否则多个线程会排队依次重复分类同一道题。
+        if question_id in _q_matrix_cache:
+            return _q_matrix_cache[question_id]
+
+        questions = _load_questions()
+        q = questions.get(question_id)
+        if not q:
+            # 题库里根本没有这个question_id，这是关于题库内容的静态事实、不会因为重试而改变，
+            # 缓存空列表没问题（不同于下面"分类失败"的情况）
+            _q_matrix_cache[question_id] = []
+            return []
+
+        kps = classify_knowledge_points_llm(q.get("stem", ""))
+        kp_ids = [kp.id for kp in kps]
+        # 兜底：多标签分类没命中时，退回题库原有的单标签 knowledge_point_id（parse_question_bank.py 打的）
+        if not kp_ids and q.get("knowledge_point_id"):
+            kp_ids = [q["knowledge_point_id"]]
+
+        # 只缓存非空结果——分类失败/高并发下临时降级判断不出知识点，不代表"这题真的没有知识点"，
+        # 不应该被永久钉死；下次请求应该有机会重新分类，直到真的分类出结果才固化进缓存。
+        if kp_ids:
+            _q_matrix_cache[question_id] = kp_ids
+        return kp_ids
 
 
 def get_question_difficulty_label(question_id: str) -> str:
@@ -115,9 +146,20 @@ def _load_json(path: str) -> dict:
 
 
 def _save_json(path: str, data: dict):
+    """原子写入：先写到同目录下的临时文件，再用os.replace()整体换名，而不是直接对目标文件
+    open("w")截断重写——后者如果进程在写到一半时被杀（比如systemd重启、断电），会留下一个
+    内容被截断的坏JSON文件，下次_load_json直接解析失败断整条链路；os.replace()在同一文件系统
+    内是原子操作，要么换成完整的新内容，要么保留原文件，不存在"半写"的中间状态。"""
     os.makedirs(DATA_DIR, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    fd, tmp_path = tempfile.mkstemp(dir=DATA_DIR, prefix=os.path.basename(path) + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        os.replace(tmp_path, path)
+    except BaseException:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise
 
 
 def _mastery_state(rating: float, n_obs: int) -> str:
@@ -190,45 +232,49 @@ def record_answer(student_id: str, question_id: str, correct: bool) -> dict:
             evidence=f"题目{question_id}：{'答对' if correct else '答错'}",
         )
 
-    item_ratings = _load_json(ITEM_RATING_PATH)
-    item_entry = item_ratings.get(question_id)
-    if item_entry is None:
-        item_entry = {"rating": DIFFICULTY_SEED.get(get_question_difficulty_label(question_id), RATING_DEFAULT), "n": 0}
+    # 整段"读表B+题目难度表 -> 改内存 -> 写回"必须串行化：如果两个学生（或同一学生两次
+    # 快速提交）的请求在不同线程里交叉执行，后写的会拿着自己读到的旧版student_mastery整个
+    # 覆盖掉，把先写的那次更新冲掉——这不是理论风险，ThreadingHTTPServer确实会并发调这个函数。
+    with _mastery_lock:
+        item_ratings = _load_json(ITEM_RATING_PATH)
+        item_entry = item_ratings.get(question_id)
+        if item_entry is None:
+            item_entry = {"rating": DIFFICULTY_SEED.get(get_question_difficulty_label(question_id), RATING_DEFAULT), "n": 0}
 
-    student_mastery = _load_json(STUDENT_MASTERY_PATH)
-    student_rows = student_mastery.setdefault(student_id, {})
+        student_mastery = _load_json(STUDENT_MASTERY_PATH)
+        student_rows = student_mastery.setdefault(student_id, {})
 
-    actual = 1.0 if correct else 0.0
-    weight = 1.0 / len(kp_ids)  # Q矩阵按均分权重，避免一题多标签的题目"重复计分"占便宜
-    item_expected_values = []
-    updated_kps = []
+        actual = 1.0 if correct else 0.0
+        weight = 1.0 / len(kp_ids)  # Q矩阵按均分权重，避免一题多标签的题目"重复计分"占便宜
+        item_expected_values = []
+        updated_kps = []
 
-    for kp_id in kp_ids:
-        kp_row = student_rows.get(kp_id, {"rating": RATING_DEFAULT, "n": 0, "last_updated": None})
-        expected = _expected_score(kp_row["rating"], item_entry["rating"])
-        item_expected_values.append(expected)
+        for kp_id in kp_ids:
+            kp_row = student_rows.get(kp_id, {"rating": RATING_DEFAULT, "n": 0, "last_updated": None})
+            expected = _expected_score(kp_row["rating"], item_entry["rating"])
+            item_expected_values.append(expected)
 
-        kp_row["rating"] = kp_row["rating"] + K_STUDENT * weight * (actual - expected)
-        kp_row["n"] = kp_row["n"] + 1
-        kp_row["last_updated"] = int(time.time())
-        student_rows[kp_id] = kp_row
+            kp_row["rating"] = kp_row["rating"] + K_STUDENT * weight * (actual - expected)
+            kp_row["n"] = kp_row["n"] + 1
+            kp_row["last_updated"] = int(time.time())
+            student_rows[kp_id] = kp_row
 
-        updated_kps.append({
-            "knowledge_point_id": kp_id,
-            "knowledge_point_name": _KP_NAME_BY_ID.get(kp_id, kp_id),
-            "rating": round(kp_row["rating"], 1),
-            "mastery_state": _mastery_state(kp_row["rating"], kp_row["n"]),
-            "n_observations": kp_row["n"],
-        })
+            updated_kps.append({
+                "knowledge_point_id": kp_id,
+                "knowledge_point_name": _KP_NAME_BY_ID.get(kp_id, kp_id),
+                "rating": round(kp_row["rating"], 1),
+                "mastery_state": _mastery_state(kp_row["rating"], kp_row["n"]),
+                "n_observations": kp_row["n"],
+            })
 
-    # 题目难度分：整题只更新一次（不随Q矩阵重复更新），用各知识点expected的均值做"这题对这个学生的综合预期通过率"
-    item_expected = sum(item_expected_values) / len(item_expected_values)
-    item_entry["rating"] = item_entry["rating"] - K_ITEM * (actual - item_expected)
-    item_entry["n"] = item_entry["n"] + 1
-    item_ratings[question_id] = item_entry
+        # 题目难度分：整题只更新一次（不随Q矩阵重复更新），用各知识点expected的均值做"这题对这个学生的综合预期通过率"
+        item_expected = sum(item_expected_values) / len(item_expected_values)
+        item_entry["rating"] = item_entry["rating"] - K_ITEM * (actual - item_expected)
+        item_entry["n"] = item_entry["n"] + 1
+        item_ratings[question_id] = item_entry
 
-    _save_json(STUDENT_MASTERY_PATH, student_mastery)
-    _save_json(ITEM_RATING_PATH, item_ratings)
+        _save_json(STUDENT_MASTERY_PATH, student_mastery)
+        _save_json(ITEM_RATING_PATH, item_ratings)
 
     return {
         "question_id": question_id,
@@ -254,14 +300,15 @@ def record_qualitative_signal(student_id: str, knowledge_point_id: str, signal_t
     effective_polarity = signal_row["effective_polarity"]
     delta = POLARITY_DIRECTION[effective_polarity] * QUALITATIVE_SIGNAL_STEP
 
-    student_mastery = _load_json(STUDENT_MASTERY_PATH)
-    student_rows = student_mastery.setdefault(student_id, {})
-    kp_row = student_rows.get(knowledge_point_id, {"rating": RATING_DEFAULT, "n": 0, "last_updated": None})
-    kp_row["rating"] = kp_row["rating"] + delta
-    kp_row["n"] = kp_row["n"] + 1
-    kp_row["last_updated"] = int(time.time())
-    student_rows[knowledge_point_id] = kp_row
-    _save_json(STUDENT_MASTERY_PATH, student_mastery)
+    with _mastery_lock:
+        student_mastery = _load_json(STUDENT_MASTERY_PATH)
+        student_rows = student_mastery.setdefault(student_id, {})
+        kp_row = student_rows.get(knowledge_point_id, {"rating": RATING_DEFAULT, "n": 0, "last_updated": None})
+        kp_row["rating"] = kp_row["rating"] + delta
+        kp_row["n"] = kp_row["n"] + 1
+        kp_row["last_updated"] = int(time.time())
+        student_rows[knowledge_point_id] = kp_row
+        _save_json(STUDENT_MASTERY_PATH, student_mastery)
 
     return {
         "student_id": student_id,

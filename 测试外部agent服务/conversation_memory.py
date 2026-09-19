@@ -21,6 +21,8 @@
 
 import json
 import os
+import tempfile
+import threading
 import time
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +32,11 @@ CONVERSATION_BUFFER_PATH = os.path.join(DATA_DIR, "conversation_buffer.json")
 # 一"轮"=学生一句+助手一句=2条。MAX_TURNS_KEPT条大约覆盖6轮问答，
 # 对教学答疑这种场景基本够用（"卡壳→引导→理解"一次互动很少超过这个长度）。
 MAX_TURNS_KEPT = 12
+
+# 所有会话共用同一个JSON文件，即使操作的是不同conversation_id，"读整份->改自己那条->写回
+# 整份"这个过程如果两个学生的请求在不同线程里交叉执行，后写的还是会拿着旧版整份数据
+# 覆盖掉先写的那次更新（哪怕两人改的是不同的key）。跟mastery_model.py同样的锁+原子写方案。
+_buffer_lock = threading.Lock()
 
 
 def _load() -> dict:
@@ -41,8 +48,15 @@ def _load() -> dict:
 
 def _save(data: dict):
     os.makedirs(DATA_DIR, exist_ok=True)
-    with open(CONVERSATION_BUFFER_PATH, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    fd, tmp_path = tempfile.mkstemp(dir=DATA_DIR, prefix="conversation_buffer.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        os.replace(tmp_path, CONVERSATION_BUFFER_PATH)
+    except BaseException:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise
 
 
 def get_buffer(conversation_id: str) -> list:
@@ -67,16 +81,17 @@ def append_turn(conversation_id: str, student_message: str, assistant_reply: str
     """一轮问答生成完之后调用，把这一轮存回缓冲。超过MAX_TURNS_KEPT自动截断最旧的。"""
     if not conversation_id:
         return
-    data = _load()
-    entry = data.setdefault(conversation_id, {"turns": [], "student_id": student_id, "last_updated": 0})
-    entry["turns"].append({"role": "user", "content": student_message, "ts": time.time()})
-    entry["turns"].append({"role": "assistant", "content": assistant_reply, "ts": time.time()})
-    if len(entry["turns"]) > MAX_TURNS_KEPT:
-        entry["turns"] = entry["turns"][-MAX_TURNS_KEPT:]
-    if student_id:
-        entry["student_id"] = student_id
-    entry["last_updated"] = time.time()
-    _save(data)
+    with _buffer_lock:
+        data = _load()
+        entry = data.setdefault(conversation_id, {"turns": [], "student_id": student_id, "last_updated": 0})
+        entry["turns"].append({"role": "user", "content": student_message, "ts": time.time()})
+        entry["turns"].append({"role": "assistant", "content": assistant_reply, "ts": time.time()})
+        if len(entry["turns"]) > MAX_TURNS_KEPT:
+            entry["turns"] = entry["turns"][-MAX_TURNS_KEPT:]
+        if student_id:
+            entry["student_id"] = student_id
+        entry["last_updated"] = time.time()
+        _save(data)
 
 
 def merge_platform_history(conversation_id: str, platform_turns: list, student_id: str = None):
@@ -94,29 +109,30 @@ def merge_platform_history(conversation_id: str, platform_turns: list, student_i
     if not conversation_id or not platform_turns:
         return get_buffer(conversation_id)
 
-    data = _load()
-    local_entry = data.get(conversation_id, {"turns": [], "student_id": student_id, "last_updated": 0})
-    local_turns = local_entry.get("turns", [])
-    normalized_platform = [{"role": t.get("role", "user"), "content": t.get("content", "")} for t in platform_turns]
+    with _buffer_lock:
+        data = _load()
+        local_entry = data.get(conversation_id, {"turns": [], "student_id": student_id, "last_updated": 0})
+        local_turns = local_entry.get("turns", [])
+        normalized_platform = [{"role": t.get("role", "user"), "content": t.get("content", "")} for t in platform_turns]
 
-    if not local_turns:
-        merged = normalized_platform[-MAX_TURNS_KEPT:]
-    elif len(normalized_platform) <= len(local_turns):
-        # 平台记录不比本地长，说明本地没漏，不用平台数据覆盖，保留本地（可能包含平台还没来得及记录的最新一轮）
-        merged = local_turns
-    else:
-        # 平台记录更长，本地缺了前面一段——用平台记录的前半段(本地没有的部分) + 本地已有内容拼接
-        missing_count = len(normalized_platform) - len(local_turns)
-        merged = normalized_platform[:missing_count] + local_turns
-        merged = merged[-MAX_TURNS_KEPT:]
+        if not local_turns:
+            merged = normalized_platform[-MAX_TURNS_KEPT:]
+        elif len(normalized_platform) <= len(local_turns):
+            # 平台记录不比本地长，说明本地没漏，不用平台数据覆盖，保留本地（可能包含平台还没来得及记录的最新一轮）
+            merged = local_turns
+        else:
+            # 平台记录更长，本地缺了前面一段——用平台记录的前半段(本地没有的部分) + 本地已有内容拼接
+            missing_count = len(normalized_platform) - len(local_turns)
+            merged = normalized_platform[:missing_count] + local_turns
+            merged = merged[-MAX_TURNS_KEPT:]
 
-    data[conversation_id] = {
-        "turns": merged,
-        "student_id": student_id or local_entry.get("student_id"),
-        "last_updated": time.time(),
-    }
-    _save(data)
-    return merged
+        data[conversation_id] = {
+            "turns": merged,
+            "student_id": student_id or local_entry.get("student_id"),
+            "last_updated": time.time(),
+        }
+        _save(data)
+        return merged
 
 
 def build_context_text(conversation_id: str, max_turns: int = 8) -> str:

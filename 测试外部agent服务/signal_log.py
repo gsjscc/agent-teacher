@@ -22,6 +22,7 @@ JSONL（而不是一次性读写整个JSON数组）是因为表A是只增不改�
 
 import json
 import os
+import threading
 import time
 from typing import Optional
 
@@ -37,6 +38,12 @@ POLARITIES = {"正", "负", "中"}
 # 以上（不含本次），本次自动判定为"反复提问"，极性强制覆盖成"负"，不管调用方传的是什么。
 REPEAT_QUESTION_WINDOW_SECONDS = 24 * 3600
 REPEAT_QUESTION_THRESHOLD = 2
+
+# record_signal() 是"读全部历史数一遍 -> 据此判断本次极性 -> 追加写"，中间那步判断依赖
+# 前面读到的计数；两个并发请求（哪怕是同一学生手快连点两次）交叉执行时，都可能读到
+# 同一个旧计数、都判定"还没达到反复提问阈值"，导致该判负的没判负。用锁把"读-判断-写"
+# 串行化，跟mastery_model.py/conversation_memory.py是同一个道理。
+_signal_lock = threading.Lock()
 
 
 def _ensure_data_dir():
@@ -87,23 +94,24 @@ def record_signal(student_id: str, knowledge_point_id: str, signal_type: str,
     repeated_question = False
     effective_polarity = polarity
 
-    if signal_type == "提问":
-        prior_count = _count_recent_questions(student_id, knowledge_point_id, now)
-        if prior_count >= REPEAT_QUESTION_THRESHOLD:
-            repeated_question = True
-            effective_polarity = "负"  # 对应9.5"反复问同一知识点 -1"，不管调用方原本传的极性是什么
+    with _signal_lock:
+        if signal_type == "提问":
+            prior_count = _count_recent_questions(student_id, knowledge_point_id, now)
+            if prior_count >= REPEAT_QUESTION_THRESHOLD:
+                repeated_question = True
+                effective_polarity = "负"  # 对应9.5"反复问同一知识点 -1"，不管调用方原本传的极性是什么
 
-    row = {
-        "student_id": student_id,
-        "knowledge_point_id": knowledge_point_id,
-        "signal_type": signal_type,
-        "polarity": polarity,          # 调用方原始判断（如果是普通提问，这里通常是"中"）
-        "effective_polarity": effective_polarity,  # 表B更新实际使用的极性（反复提问会被覆盖成"负"）
-        "evidence": evidence,
-        "repeated_question": repeated_question,
-        "timestamp": now,
-    }
-    _append(row)
+        row = {
+            "student_id": student_id,
+            "knowledge_point_id": knowledge_point_id,
+            "signal_type": signal_type,
+            "polarity": polarity,          # 调用方原始判断（如果是普通提问，这里通常是"中"）
+            "effective_polarity": effective_polarity,  # 表B更新实际使用的极性（反复提问会被覆盖成"负"）
+            "evidence": evidence,
+            "repeated_question": repeated_question,
+            "timestamp": now,
+        }
+        _append(row)
     return row
 
 
