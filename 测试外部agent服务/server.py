@@ -17,8 +17,8 @@ from logging.handlers import RotatingFileHandler
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
-from knowledge_base import classify_knowledge_point, KNOWLEDGE_POINTS
-from llm_client import generate_explanation_and_media
+from knowledge_base import KNOWLEDGE_POINTS
+from llm_client import generate_explanation_and_media, classify_knowledge_points_llm, generate_fallback_reply
 from mastery_model import record_answer, record_qualitative_signal, get_profile, get_due_for_review, get_question
 from signal_log import get_signals, SIGNAL_TYPES, POLARITIES
 import conversation_memory
@@ -296,9 +296,18 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             self._send_json(200, response_payload)
             return
 
-        kp = classify_knowledge_point(message)
-        if kp is None:
-            reply = "这个问题好像不在《机械设计基础》已覆盖的知识点范围内，能换个说法或者说明具体想问哪部分吗？"
+        # 分类走LLM语义版（classify_knowledge_points_llm），不用纯关键词版
+        # classify_knowledge_point——关键词匹配只能覆盖"提前想到过的说法"，学生换个
+        # 表达（口语化、缩写、错别字）就会被误判成"没有知识点"，这类死角只有语义理解
+        # 能兜住。多个候选时取第一个作为本轮主要讲解的知识点（没有单独的置信度排序，
+        # 但对"就地生成一份讲解"这个场景来说足够用）。
+        matched_kps = classify_knowledge_points_llm(message)
+        if not matched_kps:
+            # 分类不到知识点，不代表只有"超纲问题"一种可能——也可能是打招呼/寒暄/道谢/
+            # 告别，或者分类模块本身没理解到但其实是相关问题。不用写死的关键词规则去猜
+            # 是哪种情况（那样只适合覆盖有限的、能穷举的说法），交给LLM自己判断怎么
+            # 自然回应，见 generate_fallback_reply()/FALLBACK_REPLY_PROMPT_TEMPLATE。
+            reply = generate_fallback_reply(message, conversation_context)
             conversation_memory.append_turn(conversation_id, message, reply, student_id)
             response_payload = {
                 "reply": reply,
@@ -312,6 +321,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             _log_agent_call("out", response_payload)
             self._send_json(200, response_payload)
             return
+        kp = matched_kps[0]
 
         # 学情字段跟表B真正联动：按 student_id + 本轮命中的知识点id，去表B里查这个学生在
         # 这个知识点上的当前掌握状态。放在这里（分类出kp之后）而不是分类之前，是因为表B是

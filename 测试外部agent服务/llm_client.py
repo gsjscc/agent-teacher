@@ -215,6 +215,63 @@ def classify_knowledge_points_llm(text: str) -> list:
         return _mock_classify_kc(text)
 
 
+FALLBACK_REPLY_PROMPT_TEMPLATE = """你是"机械小助手"，河南科技大学《机械原理》《机械设计基础》
+课程的学习伙伴。
+
+{conversation_context_block}
+学生刚发来这句话：
+{message}
+
+# 背景
+分类模块判断这句话没有涉及课程范围内的任何知识点——但这本身可能对应好几种完全不同的情况，
+不要机械地当成"只有一种可能"：
+- 学生只是打招呼/寒暄/道谢/告别，压根没打算问知识点
+- 学生问了课程范围外的东西（其他课程、生活闲聊、跟机械原理无关的内容）
+- 学生的话里其实带着知识点，只是分类模块没识别出来（比如用词很口语化、缩写、错别字，
+  或者问的是这门课确实没覆盖到的细分领域）
+- 学生的表达太模糊/不完整，看不出想问什么
+
+# 任务
+你自己判断这句话属于上面哪种情况，给出自然、简短、符合这种情况的回应：
+- 打招呼/寒暄 -> 像正常人一样回应，顺带提一句你能帮上什么忙（讲知识点/3D演示/自测出题），
+  不要机械地报菜单
+- 真的超纲/无关 -> 委婉说明这不在你的服务范围内，不用逐条列举课程目录
+- 看起来可能跟课程有关但你能理解意思 -> 直接尝试用你自己的知识回答，不要因为"分类模块
+  没认出来"就拒绝回答，那样对学生很不友好；只在真的看不懂在问什么的时候才反问澄清
+- 太模糊看不懂 -> 反问学生想问什么，不要瞎猜
+
+不要提"分类""关键词""覆盖范围""知识点列表"这类技术性说法，学生感受不到、也不需要知道
+你内部是怎么判断的。直接输出你的回复文本，不要输出多余的解释或JSON。"""
+
+
+def _mock_fallback_reply(message: str) -> str:
+    """没配key时的降级占位——没法做语义判断，退化成最保守的一句通用回应，
+    带[MOCK-LLM]前缀避免被误当成真实模型输出，跟本文件其他MOCK函数一致。"""
+    return "[MOCK-LLM 占位输出] 这句话好像不属于《机械原理》《机械设计基础》的内容，能换个说法或者说明具体想问哪部分吗？"
+
+
+def generate_fallback_reply(message: str, conversation_context: str = "") -> str:
+    """分类模块判断这句话没有命中任何知识点时的兜底回复生成——不是无脑返回一句写死的
+    "不在覆盖范围内"，而是把判断"这到底是问候/闲聊/超纲问题/表达模糊"这件事也交给LLM
+    自己做（原因见 FALLBACK_REPLY_PROMPT_TEMPLATE 顶部说明）：关键词/规则判断只适合
+    覆盖有限的、能穷举的场景，学生实际的说法五花八门，硬编码规则很快就会碰到没覆盖到
+    的说法，而LLM天然能理解语义，不需要为每种可能的问候/寒暄措辞单独维护一份关键词表。
+
+    没配key或调用失败时降级成 _mock_fallback_reply()，跟本文件其他函数策略一致，
+    不会因为这一步失败就导致整条链路报错断掉。
+    """
+    if not QIANFAN_API_KEY:
+        return _mock_fallback_reply(message)
+
+    context_block = f"之前的对话：\n{conversation_context}\n" if conversation_context else ""
+    prompt = FALLBACK_REPLY_PROMPT_TEMPLATE.format(conversation_context_block=context_block, message=message)
+    try:
+        return _call_llm(prompt).strip()
+    except (urllib.error.URLError, urllib.error.HTTPError) as e:
+        fallback = _mock_fallback_reply(message)
+        return f"[LLM调用失败，已降级为占位输出：{e}] " + fallback
+
+
 FILL_BLANK_JUDGE_PROMPT_TEMPLATE = """题目：
 {stem}
 
