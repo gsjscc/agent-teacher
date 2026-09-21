@@ -19,6 +19,7 @@
 等真接入表A/B插件存储时，这里换成插件调用即可，接口形状不用变。
 """
 
+import contextlib
 import json
 import os
 import tempfile
@@ -38,6 +39,32 @@ MAX_TURNS_KEPT = 12
 # 整份"这个过程如果两个学生的请求在不同线程里交叉执行，后写的还是会拿着旧版整份数据
 # 覆盖掉先写的那次更新（哪怕两人改的是不同的key）。跟mastery_model.py同样的锁+原子写方案。
 _buffer_lock = threading.Lock()
+
+# server.py 里"读pending_question -> 判断学生这句话像不像在作答 -> 判分/记表B -> 清pending_question"
+# 是跨好几次独立调用的一整段逻辑，其中"判断像不像在作答"是一次LLM网络调用（quiz.looks_like_answering），
+# 耗时几百毫秒到几秒。如果同一个conversation_id在这个窗口期内收到第二个请求（客户端网络重试、
+# 双击提交），两个线程会都读到同一个pending题目、都判定"像在作答"、都各自调用一次record_answer——
+# 同一次作答被计分两次，污染Elo/表B。需要把这一整段包成一个临界区，不能只保证get/set/clear
+# 各自单独原子（那样解决的是"文件读写不撞车"，解决不了"两个线程各自基于同一份旧pending状态
+# 都做出了同样的判定"这个逻辑竞态）。
+#
+# 用按conversation_id分片的锁，而不是直接复用上面的全局_buffer_lock：这段临界区内部要发一次
+# 网络请求，如果直接拿全局锁，等于让所有会话的请求排队等这一次LLM调用，把整个服务的并发能力
+# 压到1；分片锁只serialize同一个会话内的重复/并发请求，不同学生的会话互不阻塞。
+# 锁字典只增不删（跟conversation_buffer.json本身"只增不做过期清理"是同一个既有取舍，
+# 数据量级在这个项目的使用场景下不构成问题，等真的需要再加淘汰逻辑）。
+_conversation_locks: dict = {}
+_conversation_locks_guard = threading.Lock()
+
+
+def conversation_lock(conversation_id: str):
+    """返回一个跟conversation_id绑定的锁（可直接用 with 语句），供server.py把"读pending_question
+    到清pending_question"这一整段包成临界区。conversation_id为空时返回一个空操作的上下文管理器——
+    这种情况下get_pending_question()本来就恒返回None，不需要真的加锁。"""
+    if not conversation_id:
+        return contextlib.nullcontext()
+    with _conversation_locks_guard:
+        return _conversation_locks.setdefault(conversation_id, threading.Lock())
 
 
 def _load() -> dict:

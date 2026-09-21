@@ -256,37 +256,47 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         # 用looks_like_answering()判断这句话像不像在作答：像，才走判分逻辑并清掉pending
         # 状态；不像，就不清掉（这道题还留着，学生想好了随时可以回来答），往下走正常的
         # 知识点讲解/出题/闲聊流程。
+        #
+        # 这一整段（读pending -> 判断像不像在作答 -> 判分/记表B -> 清pending）用
+        # conversation_lock()包成一个临界区：同一个conversation_id如果因为客户端网络重试
+        # 或双击提交在短时间内收到两个请求，不加锁的话两个线程会都读到同一个pending题目、
+        # 都判定"像在作答"、都各自调用一次record_answer，导致同一次作答被计分两次
+        # （污染Elo/表B）。加锁只serialize同一个会话内的重复请求，不影响其他会话的并发。
         # ------------------------------------------------------------------
-        pending = conversation_memory.get_pending_question(conversation_id)
-        if pending:
-            q = get_question(pending["question_id"])
-            if q is None:
-                # 极端情况：题库文件被换了/题目id失效，防御性地清掉这个挂死的状态，
-                # 避免以后每一轮都卡在这个查不到的pending_question上
-                conversation_memory.clear_pending_question(conversation_id)
-            elif quiz.looks_like_answering(q, message):
-                correct = quiz.judge_answer(q, message)
-                record_answer(effective_student_id, q["id"], correct)
-                reply = quiz.format_feedback(q, correct)
-                conversation_memory.clear_pending_question(conversation_id)
-                conversation_memory.append_turn(conversation_id, message, reply, student_id)
-                response_payload = {
-                    "reply": reply,
-                    "content_id": "none",
-                    "knowledge_point": q.get("knowledge_point_id"),
-                }
-                _log_agent_call("in_parsed", {
-                    "message": message, "conversation_id": conversation_id, "student_id": student_id,
-                    "quiz_judge": {"question_id": q["id"], "correct": correct},
-                })
-                _log_agent_call("out", response_payload)
-                self._send_json(200, response_payload)
-                return
-            # else: 不像在回答，不清pending_question，往下继续走正常流程
+        with conversation_memory.conversation_lock(conversation_id):
+            pending = conversation_memory.get_pending_question(conversation_id)
+            if pending:
+                q = get_question(pending["question_id"])
+                if q is None:
+                    # 极端情况：题库文件被换了/题目id失效，防御性地清掉这个挂死的状态，
+                    # 避免以后每一轮都卡在这个查不到的pending_question上
+                    conversation_memory.clear_pending_question(conversation_id)
+                elif quiz.looks_like_answering(q, message):
+                    correct = quiz.judge_answer(q, message)
+                    record_answer(effective_student_id, q["id"], correct)
+                    reply = quiz.format_feedback(q, correct)
+                    conversation_memory.clear_pending_question(conversation_id)
+                    conversation_memory.append_turn(conversation_id, message, reply, student_id)
+                    response_payload = {
+                        "reply": reply,
+                        "content_id": "none",
+                        "knowledge_point": q.get("knowledge_point_id"),
+                    }
+                    _log_agent_call("in_parsed", {
+                        "message": message, "conversation_id": conversation_id, "student_id": student_id,
+                        "quiz_judge": {"question_id": q["id"], "correct": correct},
+                    })
+                    _log_agent_call("out", response_payload)
+                    self._send_json(200, response_payload)
+                    return
+                # else: 不像在回答，不清pending_question，往下继续走正常流程
 
         quiz_request = quiz.detect_quiz_request(message)
         if quiz_request["is_quiz_request"]:
-            q = quiz.pick_question(student_id, quiz_request["target_knowledge_point_id"])
+            # 同上：挑"该复习的薄弱知识点"要读表B的due_for_review，必须用effective_student_id，
+            # 否则匿名学生哪怕之前已经答错了好几道题，pick_question内部的due检查也读不到
+            # （原始student_id为空），只能退化成随机挑题，体现不出"该复习"的针对性
+            q = quiz.pick_question(effective_student_id, quiz_request["target_knowledge_point_id"])
             if q is None:
                 reply = "题库里暂时没有能自动判分的题可以出给你，先聊点别的吧。"
                 content_id = "none"
@@ -340,17 +350,19 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             return
         kp = matched_kps[0]
 
-        # 学情字段跟表B真正联动：按 student_id + 本轮命中的知识点id，去表B里查这个学生在
-        # 这个知识点上的当前掌握状态。放在这里（分类出kp之后）而不是分类之前，是因为表B是
-        # 按"学生-知识点"这个组合维度存的，没有具体kp就查不出针对性的那一行；student_id为空
-        # （没绑定系统变量，或访客未登录）时退化成"未学"，不报错断链路，跟conversation_id
-        # 的向后兼容策略一致。detail_level/encourage_level 表B目前没有对应字段，暂时保持默认值。
+        # 学情字段跟表B真正联动：按 effective_student_id（而不是原始student_id）+ 本轮命中的
+        # 知识点id，去表B里查这个学生在这个知识点上的当前掌握状态。必须用effective_student_id：
+        # 匿名学生（没绑定系统变量/访客未登录）答题记录是按"匿名_会话id"存进表B的（见上面
+        # effective_student_id的定义和quiz判分分支的record_answer调用），如果这里查表B时
+        # 还用原始student_id（匿名时是空字符串），会永远查不到刚记进去的数据，匿名学生答对
+        # 再多题、mastery_level也会一直卡在"未学"，个性化形同虚设。放在这里（分类出kp之后）
+        # 而不是分类之前，是因为表B是按"学生-知识点"这个组合维度存的，没有具体kp就查不出
+        # 针对性的那一行。detail_level/encourage_level 表B目前没有对应字段，暂时保持默认值。
         mastery_level = "未学"
-        if student_id:
-            profile_rows = get_profile(student_id).get("knowledge_points", [])
-            matched_row = next((r for r in profile_rows if r["knowledge_point_id"] == kp.id), None)
-            if matched_row:
-                mastery_level = matched_row["mastery_state"]
+        profile_rows = get_profile(effective_student_id).get("knowledge_points", [])
+        matched_row = next((r for r in profile_rows if r["knowledge_point_id"] == kp.id), None)
+        if matched_row:
+            mastery_level = matched_row["mastery_state"]
         student_state = {
             "mastery_level": mastery_level,
             "detail_level": data.get("detail_level", "中"),
