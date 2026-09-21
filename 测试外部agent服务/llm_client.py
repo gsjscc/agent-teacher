@@ -104,9 +104,15 @@ PROMPT_TEMPLATE = """当前知识点：{knowledge_point}
 }}"""
 
 
-# JSON字符串里合法的转义字符——反斜杠后面跟这些才是"json.loads认识的转义序列"，
-# 跟着别的字符（比如LaTeX的 \times \frac \( \) ）就是非法转义，会直接让json.loads报错。
-_VALID_JSON_ESCAPE_CHARS = set('"\\/bfnrtu')
+# 这里故意没有列出JSON规范里全部合法的转义字符（"\\/bfnrtu"），只列了模型真实会有意
+# 使用的几个（引号、反斜杠本身、换行）。原因：b/f/r/t/u 这几个字母恰好是LaTeX命令的
+# 常见首字母——\times \frac \beta \rightarrow \underline——如果把它们也当"合法转义"
+# 放过，json.loads会把"\t"解析成制表符、"\f"解析成换页符，模型原本想写的"times""frac"
+# 这些字母反而从explanation里消失、换成看不见的控制字符，比留着反斜杠更难排查。所以这里
+# 宁可"错杀"少数模型确实想用\t \r这类真实转义的场景（对话文本里本来就极少见），也要把
+# b/f/r/t/u排除在信任范围外，统一按下面_fix_invalid_json_escapes()的"非法转义"分支处理
+# （丢弃反斜杠、保留字母本身），这样\times会变成times，至少文字内容不会丢也不会插入乱码。
+_VALID_JSON_ESCAPE_CHARS = set('"\\n')
 
 
 def _fix_invalid_json_escapes(json_text: str) -> str:
@@ -115,17 +121,27 @@ def _fix_invalid_json_escapes(json_text: str) -> str:
     直接把 json.loads 干报错（"Invalid \\escape"），整条讲解生成失败、降级成完全不相关的
     MOCK占位内容，公式类/讲解类回答的可用性因此打了折扣。
 
-    这里扫一遍文本，把"反斜杠后面不是JSON合法转义字符"的地方多补一个反斜杠——
-    比如 \\times 变成 \\\\times，json.loads 就能把它解析成字面上的两个字符 "\times"
-    （反斜杠+times），而不是报错崩掉。代价是这类LaTeX命令最终会原样显示在讲解文本里
-    （不会被渲染成公式），但至少保住了整条回复不被降级成MOCK——两害相权取其轻。
+    这里扫一遍文本，遇到"反斜杠+JSON合法转义字符"就把这两个字符当一个整体一起跳过，
+    遇到"反斜杠+其他字符"（非法转义）就把这个反斜杠直接丢弃、只保留后面那个字符。
+    必须按"整体跳过合法转义对"来处理，不能像早期版本那样逐字符扫、遇到非法反斜杠就
+    多塞一个反斜杠回去——那样一旦文本里连续出现好几个反斜杠（LaTeX公式里很常见，比如
+    "\\times \\frac \\(" ），前一对转义里补出来的反斜杠会被下一轮循环误当成新一轮转义的
+    起点，导致后面本该合法的转义对也被错误地当成非法处理，级联出更多解析不出来的转义。
+    丢弃非法反斜杠（而不是转义成双反斜杠）还有个好处：不会再引入新的反斜杠字符，从根上
+    避免了这种级联误判。代价是LaTeX命令里的反斜杠会从最终讲解文本里消失（"\\times"变成
+    "times"），不会被渲染成公式，但比整条回复被降级成不相关的MOCK内容要好得多。
     """
     result = []
     i, n = 0, len(json_text)
     while i < n:
         ch = json_text[i]
-        if ch == "\\" and i + 1 < n and json_text[i + 1] not in _VALID_JSON_ESCAPE_CHARS:
-            result.append("\\\\")
+        if ch == "\\":
+            if i + 1 < n and json_text[i + 1] in _VALID_JSON_ESCAPE_CHARS:
+                result.append(ch)
+                result.append(json_text[i + 1])
+                i += 2
+                continue
+            # 非法转义，或反斜杠是最后一个字符——直接丢掉这个反斜杠，不产出新的反斜杠
             i += 1
             continue
         result.append(ch)
