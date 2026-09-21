@@ -29,30 +29,54 @@ import re
 from typing import Optional
 
 from mastery_model import get_question, iter_questions, get_due_for_review
-from llm_client import judge_fill_blank_llm
+from llm_client import judge_fill_blank_llm, detect_quiz_request_llm, is_answering_pending_question_llm
 
 # 出题只从"有真实标准答案、能自动判分"的题型里选，short_answer被排除在外（见上面模块docstring）。
 AUTO_GRADABLE_TYPES = {"single_choice", "true_false", "multiple_choice", "fill_blank"}
 
-# 判断"学生这句话是不是想自测/让我们出题"的意图关键词。跟 knowledge_base.classify_knowledge_point()
-# 一样先用关键词判断，够用；以后如果发现学生换种说法识别不出来，再考虑升级成LLM语义分类
-# （跟 classify_knowledge_points_llm 是同一个套路，到时候接口形状不用变，调用方不用改）。
-QUIZ_INTENT_KEYWORDS = ["考考我", "来道题", "出一道题", "出道题", "自测", "测一下我", "做几道题", "随便考我", "给我出题"]
+
+def detect_quiz_request(message: str) -> dict:
+    """判断学生是不是想自测出题、有没有指定知识点——直接转发给 llm_client.detect_quiz_request_llm()，
+    不用关键词表：关键词只能覆盖"考考我""来道题"这类提前想到的说法，学生说"帮我复习一下"
+    "想练几道题看看"照样是出题请求，但命中不了任何写死的关键词，只有语义理解能兜住，
+    跟 llm_client.classify_knowledge_points_llm() 是同一个理由。这里单独包一层是为了让
+    server.py 只依赖 quiz.py 这一个模块，不用同时import llm_client，边界更清晰。
+
+    返回 {"is_quiz_request": bool, "target_knowledge_point_id": Optional[str]}。
+    """
+    return detect_quiz_request_llm(message)
 
 
-def is_quiz_intent(message: str) -> bool:
-    """判断这轮消息是不是在要求出题自测（而不是在回答上一轮的题——那种情况由
-    server.py 通过 conversation_memory.get_pending_question() 优先判断，不会走到这里）。"""
-    return any(kw in message for kw in QUIZ_INTENT_KEYWORDS)
+def looks_like_answering(q: dict, student_message: str) -> bool:
+    """判断学生这轮消息看起来像不像是在回答挂着的题q——同样不用"有没有出现选项字母/
+    对错词"这种死板规则去猜（那样"我不确定选A还是B，能先讲讲这个知识点吗"这种其实是在
+    问问题的话会被误判成在作答），交给LLM理解语境。"""
+    return is_answering_pending_question_llm(q["stem"], q.get("type", ""), student_message)
 
 
-def pick_question(student_id: str) -> Optional[dict]:
-    """挑一道题给学生练。优先挑"该复习"的薄弱知识点（借 mastery_model.get_due_for_review()
-    的遗忘曲线判断——哪个知识点估算记忆保持率跌得最狠就优先练哪个），没有薄弱知识点数据可用时
+def pick_question(student_id: str, target_knowledge_point_id: Optional[str] = None) -> Optional[dict]:
+    """挑一道题给学生练。
+
+    target_knowledge_point_id：学生自己指定要练哪个知识点时（比如"帮我出一道关于杆长条件的题"），
+    优先级最高——尊重学生的明确诉求，不要因为"系统算法认为你更该练别的"就无视掉。
+    没指定时，优先挑"该复习"的薄弱知识点（借 mastery_model.get_due_for_review() 的遗忘曲线
+    判断——哪个知识点估算记忆保持率跌得最狠就优先练哪个），没有薄弱知识点数据可用时
     （比如新学生表B还是空的，或者没传student_id）随机挑一道可自动判分的题兜底。
 
     返回题目原始dict（题库.json的一行），找不到可选的题时返回None。
     """
+    if target_knowledge_point_id:
+        candidates = [
+            q for q in iter_questions()
+            if q.get("knowledge_point_id") == target_knowledge_point_id and q.get("type") in AUTO_GRADABLE_TYPES
+        ]
+        if candidates:
+            return random.choice(candidates)
+        # 学生指定的知识点没有能自动判分的题——不要静默地当作"没指定"随便挑一道别的题，
+        # 那样学生会觉得答非所问；往下走随机兜底，是"总比完全不出题好"的最后防线，
+        # 调用方（server.py）如果想更精确地告诉学生"这个知识点暂时没题"，可以自己
+        # 先检查一遍这个条件，这里只负责挑题本身。
+
     due = get_due_for_review(student_id)["due_for_review"] if student_id else []
     if due:
         target_kp = due[0]["knowledge_point_id"]

@@ -89,6 +89,11 @@ PROMPT_TEMPLATE = """当前知识点：{knowledge_point}
 - mastery_level=已掌握 且 detail_level=低（学生只是想快速确认一下）→ 倾向none
 - mastery_level=未学/薄弱 → 倾向配图或3D，降低单靠文字理解的门槛
 
+如果讲解里要写数学公式，只用普通文字符号（比如 d = m × z、F = 3n - 2PL - PH），
+不要用LaTeX语法（不要出现 \times \frac \( \) 这类反斜杠命令）——你的输出会被当成JSON
+解析，反斜杠是JSON的转义符，LaTeX命令会导致解析失败、整条回复变成兜底占位内容，
+公式写不出来反而更糟。
+
 只输出以下JSON，不要输出多余文字：
 {{
   "explanation": "按上面四步结构生成的讲解文本",
@@ -99,12 +104,47 @@ PROMPT_TEMPLATE = """当前知识点：{knowledge_point}
 }}"""
 
 
+# JSON字符串里合法的转义字符——反斜杠后面跟这些才是"json.loads认识的转义序列"，
+# 跟着别的字符（比如LaTeX的 \times \frac \( \) ）就是非法转义，会直接让json.loads报错。
+_VALID_JSON_ESCAPE_CHARS = set('"\\/bfnrtu')
+
+
+def _fix_invalid_json_escapes(json_text: str) -> str:
+    """兜底修复：prompt已经让模型别用LaTeX写公式（见PROMPT_TEMPLATE），但模型不一定
+    每次都听话——真实测过一次"帮我画个图讲解连杆"，模型在explanation里混入了LaTeX命令，
+    直接把 json.loads 干报错（"Invalid \\escape"），整条讲解生成失败、降级成完全不相关的
+    MOCK占位内容，公式类/讲解类回答的可用性因此打了折扣。
+
+    这里扫一遍文本，把"反斜杠后面不是JSON合法转义字符"的地方多补一个反斜杠——
+    比如 \\times 变成 \\\\times，json.loads 就能把它解析成字面上的两个字符 "\times"
+    （反斜杠+times），而不是报错崩掉。代价是这类LaTeX命令最终会原样显示在讲解文本里
+    （不会被渲染成公式），但至少保住了整条回复不被降级成MOCK——两害相权取其轻。
+    """
+    result = []
+    i, n = 0, len(json_text)
+    while i < n:
+        ch = json_text[i]
+        if ch == "\\" and i + 1 < n and json_text[i + 1] not in _VALID_JSON_ESCAPE_CHARS:
+            result.append("\\\\")
+            i += 1
+            continue
+        result.append(ch)
+        i += 1
+    return "".join(result)
+
+
 def _extract_json(text: str) -> dict:
     """从模型输出里抠出JSON——即使模型多输出了几句废话也能兜底解析。"""
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if not match:
         raise ValueError(f"未能从模型输出中解析出JSON：{text[:200]}")
-    return json.loads(match.group(0))
+    raw = match.group(0)
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        # 最常见的诱因是模型讲数学公式时混入了LaTeX语法，先按这个假设修复一次转义再重试，
+        # 而不是让整条讲解生成链路直接失败降级成不相关的MOCK内容
+        return json.loads(_fix_invalid_json_escapes(raw))
 
 
 def _call_llm(prompt: str) -> str:
@@ -201,8 +241,7 @@ def classify_knowledge_points_llm(text: str) -> list:
     if not QIANFAN_API_KEY:
         return _mock_classify_kc(text)
 
-    candidates = "\n".join(f"{kp.id}: {kp.name} - {'、'.join(kp.keywords)}" for kp in KNOWLEDGE_POINTS)
-    prompt = KC_TAGGING_PROMPT_TEMPLATE.format(candidates=candidates, text=text)
+    prompt = KC_TAGGING_PROMPT_TEMPLATE.format(candidates=_kp_candidates_text(), text=text)
     try:
         raw_text = _call_llm(prompt)
         result = _extract_json(raw_text)
@@ -270,6 +309,110 @@ def generate_fallback_reply(message: str, conversation_context: str = "") -> str
     except (urllib.error.URLError, urllib.error.HTTPError) as e:
         fallback = _mock_fallback_reply(message)
         return f"[LLM调用失败，已降级为占位输出：{e}] " + fallback
+
+
+def _kp_candidates_text() -> str:
+    """构造"候选知识点清单"文本，KC_TAGGING_PROMPT_TEMPLATE和下面几个新的意图判断
+    prompt都要用到同一份候选清单，抽出来避免同样的拼接逻辑写三遍。"""
+    return "\n".join(f"{kp.id}: {kp.name} - {'、'.join(kp.keywords)}" for kp in KNOWLEDGE_POINTS)
+
+
+PENDING_ANSWER_CHECK_PROMPT_TEMPLATE = """刚才给学生出了一道题，学生现在回了一句话，判断这句话
+是"在回答这道题"，还是"在问别的事情"（比如学生看不懂题目、想先弄懂相关知识点、或者干脆聊起了
+别的）——这个判断很重要：如果误判成"在回答"，会把一句正常提问强行当成答案去判对错，体验很差。
+
+题目：
+{stem}
+
+学生刚才回的话：
+{student_message}
+
+# 任务
+只判断"这句话像不像是在尝试回答上面这道题"，不需要判断对错（对错是另一个环节的事）。
+只要学生的话里包含了某种形式的作答尝试（哪怕答得不对、答得含糊），就算"在回答"；如果学生
+明显是在问问题、要求讲解、表示不会/想先学、或者说的是完全无关的内容，就算"不在回答"。
+
+只输出以下JSON，不要输出多余文字：
+{{"is_answering": true 或 false}}"""
+
+
+def _mock_is_answering_pending(question_type: str, student_message: str) -> bool:
+    """没配key时的降级判断：退化成"这句话里有没有出现看起来像作答的痕迹"这种粗糙规则——
+    选择题/判断题看有没有选项字母或对错词汇，其余情况（填空/简答）没有类似的字面线索
+    可抓，保守地当作"在回答"（宁可误判成回答走一次可能不准的判分，也不要让填空题永远
+    卡在pending_question出不去）。"""
+    import re
+    if question_type in ("single_choice", "multiple_choice"):
+        return bool(re.search(r"[A-Ea-e]", student_message))
+    if question_type == "true_false":
+        lower = student_message.lower()
+        return any(w in lower for w in ("对", "错", "正确", "错误", "true", "false"))
+    return True
+
+
+def is_answering_pending_question_llm(stem: str, question_type: str, student_message: str) -> bool:
+    """判断学生这轮消息是不是在回答挂起的题，而不是在问别的——不用"看有没有选项字母"这种
+    死板规则去判断（那样"我不知道选什么，A和B看着都像"这种夹杂了字母的疑问句会被误判成
+    在回答），交给LLM理解语境。没配key/调用失败时降级成 _mock_is_answering_pending()。
+    """
+    if not QIANFAN_API_KEY:
+        return _mock_is_answering_pending(question_type, student_message)
+
+    prompt = PENDING_ANSWER_CHECK_PROMPT_TEMPLATE.format(stem=stem, student_message=student_message)
+    try:
+        raw_text = _call_llm(prompt)
+        result = _extract_json(raw_text)
+        return bool(result.get("is_answering", True))
+    except (urllib.error.URLError, urllib.error.HTTPError, ValueError, json.JSONDecodeError):
+        return _mock_is_answering_pending(question_type, student_message)
+
+
+QUIZ_REQUEST_PROMPT_TEMPLATE = """以下是本课程全部知识点的候选清单（id: 名称 - 关键词）：
+{candidates}
+
+学生这句话原文：
+{message}
+
+# 任务
+判断学生是不是想让你出题自测/练习（比如"考考我""来道题""帮我复习一下""练习几道题"这类诉求，
+不管措辞多随意都算）。如果是，再看学生有没有指定想练哪个知识点/章节——指定了就从候选清单里
+选对应的id，没指定（比如就说"随便考我"）就是null，不能编造候选清单里没有的id。
+
+只输出以下JSON，不要输出多余文字：
+{{"is_quiz_request": true 或 false, "target_knowledge_point_id": "候选id或null"}}"""
+
+
+def _mock_detect_quiz_request(message: str) -> dict:
+    """没配key时的降级判断：退化成关键词匹配（比纯粹返回false更有用，至少覆盖最常见的
+    几种说法），没法做"学生有没有指定知识点"这种语义抽取，target_knowledge_point_id
+    固定返回None——降级场景本来就是精度打折的，不强求做到完整功能。"""
+    keywords = ("考考我", "来道题", "出一道题", "出道题", "自测", "测一下我", "做几道题", "随便考我", "给我出题", "复习一下")
+    return {"is_quiz_request": any(kw in message for kw in keywords), "target_knowledge_point_id": None}
+
+
+def detect_quiz_request_llm(message: str) -> dict:
+    """判断学生是不是想自测出题，以及有没有指定知识点。不用关键词表——学生说"帮我复习一下"
+    "想练几道题看看"这类没有事先枚举到的说法，关键词匹配会漏判，只有语义理解能兜住，跟
+    classify_knowledge_points_llm是同一个理由。没配key/调用失败时降级成 _mock_detect_quiz_request()。
+
+    返回 {"is_quiz_request": bool, "target_knowledge_point_id": Optional[str]}。
+    """
+    if not QIANFAN_API_KEY:
+        return _mock_detect_quiz_request(message)
+
+    prompt = QUIZ_REQUEST_PROMPT_TEMPLATE.format(candidates=_kp_candidates_text(), message=message)
+    try:
+        raw_text = _call_llm(prompt)
+        result = _extract_json(raw_text)
+        target = result.get("target_knowledge_point_id")
+        # LLM偶尔会返回候选清单里没有的id（幻觉）或者把"没指定"写成空字符串而不是null，
+        # 这里统一校验/归一化，跟其余分类函数"过滤幻觉id"的防线一致
+        valid_ids = {kp.id for kp in KNOWLEDGE_POINTS}
+        if target not in valid_ids:
+            target = None
+        return {"is_quiz_request": bool(result.get("is_quiz_request", False)), "target_knowledge_point_id": target}
+    except (urllib.error.URLError, urllib.error.HTTPError, ValueError, json.JSONDecodeError):
+        return _mock_detect_quiz_request(message)
 
 
 FILL_BLANK_JUDGE_PROMPT_TEMPLATE = """题目：

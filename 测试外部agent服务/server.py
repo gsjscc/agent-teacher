@@ -236,12 +236,26 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             conversation_memory.merge_platform_history(conversation_id, platform_history, student_id)
         conversation_context = conversation_memory.build_context_text(conversation_id)
 
+        # 表B更新要求"student_id"能唯一标识一个人；没传student_id时（访客模式、系统变量
+        # 没绑定成功）不能全部塞进同一个共享的"匿名学生"桶——那样会把互不相干的人的答题
+        # 记录混在一起，互相污染Elo评分和掌握度画像。退而求其次用conversation_id隔离
+        # （同一个会话内的答题至少不会跟别的会话的人混），两者都没有时才共用同一个占位id
+        # （极端情况，理论上不应该发生，因为任务流那边conversation_id是平台自动生成的）。
+        effective_student_id = student_id or (f"匿名_{conversation_id}" if conversation_id else "匿名学生")
+
         # ------------------------------------------------------------------
         # 车道A/C「出题-判分」分支：不走"在超星任务流里另搭判断节点"这条路，出题和收
         # 学生作答复用的是同一条 /agent 转发链路（见 quiz.py 模块顶部说明）。这段必须
         # 放在"知识点讲解"分支之前判断——学生这一轮如果是在回答上一轮出的题，内容本身
         # 大概率匹配不到任何知识点关键词（比如学生就回一个"A"或"对"），会被误判成
         # "问题不在覆盖范围内"，所以要先看有没有挂着一道等答案的题，再决定走哪条路。
+        #
+        # 但"有pending_question"不代表学生这一轮一定是在回答——也可能是看不懂题、
+        # 想先弄懂相关知识点再作答、或者干脆问了完全无关的事。不能无脑把pending_question
+        # 存在当成"下一句话必是答案"，那样会把一句正常提问强行当成错误答案判掉，体验很差。
+        # 用looks_like_answering()判断这句话像不像在作答：像，才走判分逻辑并清掉pending
+        # 状态；不像，就不清掉（这道题还留着，学生想好了随时可以回来答），往下走正常的
+        # 知识点讲解/出题/闲聊流程。
         # ------------------------------------------------------------------
         pending = conversation_memory.get_pending_question(conversation_id)
         if pending:
@@ -250,9 +264,9 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
                 # 极端情况：题库文件被换了/题目id失效，防御性地清掉这个挂死的状态，
                 # 避免以后每一轮都卡在这个查不到的pending_question上
                 conversation_memory.clear_pending_question(conversation_id)
-            else:
+            elif quiz.looks_like_answering(q, message):
                 correct = quiz.judge_answer(q, message)
-                record_answer(student_id or "匿名学生", q["id"], correct)
+                record_answer(effective_student_id, q["id"], correct)
                 reply = quiz.format_feedback(q, correct)
                 conversation_memory.clear_pending_question(conversation_id)
                 conversation_memory.append_turn(conversation_id, message, reply, student_id)
@@ -268,9 +282,11 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
                 _log_agent_call("out", response_payload)
                 self._send_json(200, response_payload)
                 return
+            # else: 不像在回答，不清pending_question，往下继续走正常流程
 
-        if quiz.is_quiz_intent(message):
-            q = quiz.pick_question(student_id)
+        quiz_request = quiz.detect_quiz_request(message)
+        if quiz_request["is_quiz_request"]:
+            q = quiz.pick_question(student_id, quiz_request["target_knowledge_point_id"])
             if q is None:
                 reply = "题库里暂时没有能自动判分的题可以出给你，先聊点别的吧。"
                 content_id = "none"
@@ -291,6 +307,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             _log_agent_call("in_parsed", {
                 "message": message, "conversation_id": conversation_id, "student_id": student_id,
                 "quiz_asked": response_payload["knowledge_point"],
+                "quiz_target_kp_requested": quiz_request["target_knowledge_point_id"],
             })
             _log_agent_call("out", response_payload)
             self._send_json(200, response_payload)
