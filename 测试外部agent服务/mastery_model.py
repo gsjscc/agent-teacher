@@ -92,6 +92,19 @@ def _load_questions() -> dict:
     return _question_index
 
 
+def get_question(question_id: str) -> Optional[dict]:
+    """按id查一道题的完整原始数据（stem/options/answer/type等字段），给 quiz.py 出题/判分用。
+    公开这个函数是为了不让 quiz.py 直接伸手进来碰 _load_questions()/_question_index 这些
+    模块内部实现细节——题库究竟是一次性加载进内存的字典、还是以后换成真数据库查询，
+    quiz.py 都不需要关心，接口形状不变。"""
+    return _load_questions().get(question_id)
+
+
+def iter_questions():
+    """给 quiz.py 挑题用——返回题库里所有题目的可迭代视图（不是拷贝，调用方不应该修改）。"""
+    return _load_questions().values()
+
+
 def get_q_matrix(question_id: str) -> list:
     """返回某道题对应的知识点ID列表（可能不止一个）。缓存，避免每次答题都重新调分类。
 

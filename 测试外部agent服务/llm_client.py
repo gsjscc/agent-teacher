@@ -215,6 +215,59 @@ def classify_knowledge_points_llm(text: str) -> list:
         return _mock_classify_kc(text)
 
 
+FILL_BLANK_JUDGE_PROMPT_TEMPLATE = """题目：
+{stem}
+
+标准答案（按空的顺序给出，学生的回答不需要逐字照抄，意思对、关键数值/术语对即可判对）：
+{correct_answers}
+
+学生的回答原文：
+{student_answer}
+
+# 任务
+判断学生的回答是否覆盖了标准答案里的要点。宽松一点判断——允许口语化表达、允许漏掉无关紧要
+的修饰词，但关键数值、专有名词、因果关系不能错或漏。只要判断，不需要解释。
+
+只输出以下JSON，不要输出多余文字：
+{{"correct": true 或 false}}"""
+
+
+def _mock_judge_fill_blank(correct_answers: list, student_answer: str) -> bool:
+    """没配key/调用失败时的降级判断：填空题标准答案通常是简短的数字/术语，退化成
+    "标准答案里的每一项是否都在学生回答原文里逐字出现"这种粗糙但至少不瞎猜的规则——
+    比语义判断严格得多（学生换个说法就会被判错），跟其他MOCK函数一样只是保证链路
+    不断，不追求跟真实LLM判断一样准。"""
+    if not correct_answers:
+        return False
+    return all(str(ans).strip() and str(ans).strip() in student_answer for ans in correct_answers)
+
+
+def judge_fill_blank_llm(stem: str, correct_answers: list, student_answer: str) -> bool:
+    """判断填空题的学生作答是否正确。填空题的标准答案是"每个空一个字符串"的列表
+    （见 题库.json 的 answer 字段，如 ["6", "3", "3"]），但学生是把所有空的答案揉在一整段
+    自由文本里回答的（比如"应该是6个瞬心，3个绝对的3个相对的"），没法用简单的字符串
+    位置对齐去逐空比对，跟 classify_knowledge_points_llm 一样的理由——语义判断只能靠LLM，
+    规则匹配的死角是学生换个措辞就会被误判。
+
+    没配key或调用失败时降级成 _mock_judge_fill_blank()（更严格的字面匹配），不直接报错
+    断掉整条"判分->更新表B"的链路，跟本文件其他函数的降级策略保持一致。
+    """
+    if not QIANFAN_API_KEY:
+        return _mock_judge_fill_blank(correct_answers, student_answer)
+
+    prompt = FILL_BLANK_JUDGE_PROMPT_TEMPLATE.format(
+        stem=stem,
+        correct_answers="、".join(str(a) for a in correct_answers),
+        student_answer=student_answer,
+    )
+    try:
+        raw_text = _call_llm(prompt)
+        result = _extract_json(raw_text)
+        return bool(result.get("correct", False))
+    except (urllib.error.URLError, urllib.error.HTTPError, ValueError, json.JSONDecodeError):
+        return _mock_judge_fill_blank(correct_answers, student_answer)
+
+
 def generate_explanation_and_media(knowledge_point: KnowledgePoint, message: str, student_state: dict,
                                     conversation_context: str = "") -> dict:
     """对外唯一入口：给定知识点+学生消息+学情状态，返回 {explanation, media:{content_id, reason}}。

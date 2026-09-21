@@ -24,6 +24,7 @@ import os
 import tempfile
 import threading
 import time
+from typing import Optional
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -147,6 +148,53 @@ def build_context_text(conversation_id: str, max_turns: int = 8) -> str:
         speaker = "学生" if t["role"] == "user" else "你（助手）"
         lines.append(f"{speaker}：{t['content']}")
     return "\n".join(lines)
+
+
+# ----------------------------------------------------------------------
+# 车道A/C「出题-判分」用的会话状态：出题之后，把"这道题的id+正确答案"记在这次对话
+# 头上，下一轮不管学生说什么，server.py先检查这里有没有挂着一道等答案的题——有的话
+# 走判分逻辑，而不是当成新问题重新分类讲解。跟"turns"存在同一个conversation_id的
+# entry里（复用同一把_buffer_lock、同一份_load/_save），不用另开一个数据文件，
+# 因为出题状态本质上也是"这次对话进行到哪一步了"的一部分。
+# ----------------------------------------------------------------------
+def set_pending_question(conversation_id: str, question_id: str, question_type: str, correct_answer):
+    """出题之后调用，把这道题记在这次对话的待判定状态里。correct_answer 原样存
+    题库.json里的answer字段（单选是字母字符串，判断题是bool，多选/填空是列表），
+    判分时按question_type分发给不同的比对逻辑，这里不关心格式细节。"""
+    if not conversation_id:
+        return
+    with _buffer_lock:
+        data = _load()
+        entry = data.setdefault(conversation_id, {"turns": [], "student_id": None, "last_updated": 0})
+        entry["pending_question"] = {
+            "question_id": question_id,
+            "question_type": question_type,
+            "correct_answer": correct_answer,
+            "asked_at": time.time(),
+        }
+        entry["last_updated"] = time.time()
+        _save(data)
+
+
+def get_pending_question(conversation_id: str) -> Optional[dict]:
+    """取这次对话当前挂着的待判定题目，没有就返回None——server.py靠这个判断"这一轮
+    是不是在回答上一轮出的题"，而不是走知识点讲解那条路。"""
+    if not conversation_id:
+        return None
+    data = _load()
+    return data.get(conversation_id, {}).get("pending_question")
+
+
+def clear_pending_question(conversation_id: str):
+    """判完分之后调用，把待判定状态清掉，避免学生下一句正常提问被误判成"在回答上一道题"。"""
+    if not conversation_id:
+        return
+    with _buffer_lock:
+        data = _load()
+        entry = data.get(conversation_id)
+        if entry and "pending_question" in entry:
+            del entry["pending_question"]
+            _save(data)
 
 
 if __name__ == "__main__":

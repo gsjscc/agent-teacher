@@ -19,9 +19,10 @@ from urllib.parse import urlparse, parse_qs
 
 from knowledge_base import classify_knowledge_point, KNOWLEDGE_POINTS
 from llm_client import generate_explanation_and_media
-from mastery_model import record_answer, record_qualitative_signal, get_profile, get_due_for_review
+from mastery_model import record_answer, record_qualitative_signal, get_profile, get_due_for_review, get_question
 from signal_log import get_signals, SIGNAL_TYPES, POLARITIES
 import conversation_memory
+import quiz
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SIM_DIR = os.path.join(BASE_DIR, "..", "四连杆3D模拟器")
@@ -234,6 +235,66 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         if platform_history:
             conversation_memory.merge_platform_history(conversation_id, platform_history, student_id)
         conversation_context = conversation_memory.build_context_text(conversation_id)
+
+        # ------------------------------------------------------------------
+        # 车道A/C「出题-判分」分支：不走"在超星任务流里另搭判断节点"这条路，出题和收
+        # 学生作答复用的是同一条 /agent 转发链路（见 quiz.py 模块顶部说明）。这段必须
+        # 放在"知识点讲解"分支之前判断——学生这一轮如果是在回答上一轮出的题，内容本身
+        # 大概率匹配不到任何知识点关键词（比如学生就回一个"A"或"对"），会被误判成
+        # "问题不在覆盖范围内"，所以要先看有没有挂着一道等答案的题，再决定走哪条路。
+        # ------------------------------------------------------------------
+        pending = conversation_memory.get_pending_question(conversation_id)
+        if pending:
+            q = get_question(pending["question_id"])
+            if q is None:
+                # 极端情况：题库文件被换了/题目id失效，防御性地清掉这个挂死的状态，
+                # 避免以后每一轮都卡在这个查不到的pending_question上
+                conversation_memory.clear_pending_question(conversation_id)
+            else:
+                correct = quiz.judge_answer(q, message)
+                record_answer(student_id or "匿名学生", q["id"], correct)
+                reply = quiz.format_feedback(q, correct)
+                conversation_memory.clear_pending_question(conversation_id)
+                conversation_memory.append_turn(conversation_id, message, reply, student_id)
+                response_payload = {
+                    "reply": reply,
+                    "content_id": "none",
+                    "knowledge_point": q.get("knowledge_point_id"),
+                }
+                _log_agent_call("in_parsed", {
+                    "message": message, "conversation_id": conversation_id, "student_id": student_id,
+                    "quiz_judge": {"question_id": q["id"], "correct": correct},
+                })
+                _log_agent_call("out", response_payload)
+                self._send_json(200, response_payload)
+                return
+
+        if quiz.is_quiz_intent(message):
+            q = quiz.pick_question(student_id)
+            if q is None:
+                reply = "题库里暂时没有能自动判分的题可以出给你，先聊点别的吧。"
+                content_id = "none"
+                knowledge_point_id = None
+            else:
+                reply = quiz.format_question_for_display(q)
+                content_id = quiz.question_display_content_id(q)
+                knowledge_point_id = q.get("knowledge_point_id")
+                # 记下这道题，等学生下一轮作答时才能判分——正确答案原样存题库里的格式，
+                # judge_answer() 按question_type知道该怎么解读这个字段
+                conversation_memory.set_pending_question(conversation_id, q["id"], q["type"], q.get("answer"))
+            conversation_memory.append_turn(conversation_id, message, reply, student_id)
+            response_payload = {
+                "reply": reply,
+                "content_id": content_id,
+                "knowledge_point": knowledge_point_id,
+            }
+            _log_agent_call("in_parsed", {
+                "message": message, "conversation_id": conversation_id, "student_id": student_id,
+                "quiz_asked": response_payload["knowledge_point"],
+            })
+            _log_agent_call("out", response_payload)
+            self._send_json(200, response_payload)
+            return
 
         kp = classify_knowledge_point(message)
         if kp is None:
