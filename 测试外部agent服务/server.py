@@ -162,18 +162,23 @@ def _embed_media_markdown(content_id: str) -> str:
     生成一张新图，完全绕开了我们已经校核过的真实教材图。既然reply是调用方唯一能可靠看到
     的字段，就不能再指望它自己拼URL，必须由我们自己在服务端把正确的、真实存在的素材链接
     直接写进reply文本里，不给对方任何"自己构造/猜测URL"的机会。
+
+    用裸URL（不加![]()这类Markdown图片/链接语法）：2026-09-22第一轮实测发现，就算把正确
+    的URL放进reply，调用方大模型在"原样转述"这一步也会把![配图](url)里的方括号部分弄丢，
+    变成不合法的"!(url)"（多了个没人认的感叹号，渲染不出图片，只能勉强被认成一个普通链接）。
+    方括号越多，模型摘抄时能出错的地方就越多；裸URL没有任何括号/符号需要它一字不差地保留，
+    只是一串普通文本，摘抄出错的空间最小。绝大多数聊天前端本身就会把消息里出现的裸图片URL
+    自动识别并渲染成图片（浏览器/IM客户端的常见行为），不需要靠Markdown语法才能显示。
     """
     if not content_id or content_id == "none":
         return ""
     if content_id in IMAGE_MANIFEST:
-        # 真实教材静态图，/media/<content_id>直接给图片字节（不是HTML页面），
-        # 用标准Markdown图片语法能被大多数聊天渲染器正确显示成一张图
-        return f"\n\n![配图]({PUBLIC_BASE_URL}/media/{content_id})\n"
+        # 真实教材静态图，/media/<content_id>直接给图片字节（不是HTML页面）
+        return f"\n\n{PUBLIC_BASE_URL}/media/{content_id}\n"
     # 其余情况（3D模拟器/mechanism_library条目/visual_store动态可视化v_*/题库配图quiz_*）
-    # 背后是完整的交互式HTML页面，不是单张图片文件——图片语法(![]())指向一个HTML页面在
-    # 大多数聊天渲染器里不会正确显示（<img>标签期望的是图片字节，不是网页），所以这里用
-    # 普通超链接而不是图片语法，让学生自己点开
-    return f"\n\n[点击查看配套演示]({PUBLIC_BASE_URL}/viewer?content={content_id})\n"
+    # 背后是完整的交互式HTML页面，不是单张图片文件，裸链接点开是一个可交互页面而不是直接
+    # 显示成图片，这个是预期行为（这类内容本来就不是一张静态图，没法真的"内嵌显示"）
+    return f"\n\n{PUBLIC_BASE_URL}/viewer?content={content_id}\n"
 
 
 _NO_VISUAL_HTML = """<!doctype html>
