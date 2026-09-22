@@ -144,6 +144,38 @@ IMAGE_MANIFEST = {
     "img_chain_silent": {"file": "第十三章图/image5.png", "title": "齿形链"},
 }
 
+# HTTPS公网地址（Cloudflare Tunnel），2026-09-22接入，见执行计划.md"server.py配图HTTPS化"条目。
+# content_id拼URL要用这个域名，不能再用之前的http://106.14.140.27:8899——那个会被
+# robot.chaoxing.com（https页面）当成混合内容(mixed content)静默拦截，浏览器一次请求都不发。
+PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "https://agent.jixiexiaozhushou.cn")
+
+
+def _embed_media_markdown(content_id: str) -> str:
+    """把content_id直接拼成一段Markdown/链接文本，追加在reply文本末尾一起返回。
+
+    为什么不是像早期设计那样把content_id放在跟reply平级的独立JSON字段里，指望调用方
+    （robot.chaoxing.com"单Agent模式"里那个大模型）自己去读这个字段、自己拼URL：
+    2026-09-22实测发现调用方大模型**根本看不到**（或者看不到就是不可靠）这个独立的
+    content_id输出参数，只能看到reply这一个字段的文本——不管系统提示词里怎么强调"去看
+    content_id字段的值"，模型都只能瞎猜content_id可能是什么（猜出"gearmesh"
+    "involutegearmesh"这类根本不存在的id，下载全部404），猜不出来就放弃、转去自己写代码
+    生成一张新图，完全绕开了我们已经校核过的真实教材图。既然reply是调用方唯一能可靠看到
+    的字段，就不能再指望它自己拼URL，必须由我们自己在服务端把正确的、真实存在的素材链接
+    直接写进reply文本里，不给对方任何"自己构造/猜测URL"的机会。
+    """
+    if not content_id or content_id == "none":
+        return ""
+    if content_id in IMAGE_MANIFEST:
+        # 真实教材静态图，/media/<content_id>直接给图片字节（不是HTML页面），
+        # 用标准Markdown图片语法能被大多数聊天渲染器正确显示成一张图
+        return f"\n\n![配图]({PUBLIC_BASE_URL}/media/{content_id})\n"
+    # 其余情况（3D模拟器/mechanism_library条目/visual_store动态可视化v_*/题库配图quiz_*）
+    # 背后是完整的交互式HTML页面，不是单张图片文件——图片语法(![]())指向一个HTML页面在
+    # 大多数聊天渲染器里不会正确显示（<img>标签期望的是图片字节，不是网页），所以这里用
+    # 普通超链接而不是图片语法，让学生自己点开
+    return f"\n\n[点击查看配套演示]({PUBLIC_BASE_URL}/viewer?content={content_id})\n"
+
+
 _NO_VISUAL_HTML = """<!doctype html>
 <html><head><meta charset="utf-8"><style>
 body { margin:0; font-family:-apple-system,sans-serif; background:#14161c; color:#7d818c;
@@ -583,6 +615,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             else:
                 reply = quiz.format_question_for_display(q)
                 content_id = quiz.decide_question_visual_content_id(q)
+                reply += _embed_media_markdown(content_id)
                 knowledge_point_id = q.get("knowledge_point_id")
                 # 记下这道题，等学生下一轮作答时才能判分——正确答案原样存题库里的格式，
                 # judge_answer() 按question_type知道该怎么解读这个字段
@@ -661,11 +694,14 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
 
         result = generate_explanation_and_media(kp, message, student_state, conversation_context, student_profile_summary)
         media = result.get("media", {}) or {}
-        reply = result.get("explanation", "")
+        content_id = media.get("content_id", "none")
+        # 把素材链接直接拼进reply文本（见_embed_media_markdown()说明）——调用方"单Agent模式"
+        # 的大模型只能可靠看到reply这一个字段，不能指望它自己去读平级的content_id字段构造URL
+        reply = result.get("explanation", "") + _embed_media_markdown(content_id)
         conversation_memory.append_turn(conversation_id, message, reply, student_id)
         response_payload = {
             "reply": reply,
-            "content_id": media.get("content_id", "none"),
+            "content_id": content_id,
             "media_reason": media.get("reason", ""),
             "knowledge_point": kp.id,
         }
