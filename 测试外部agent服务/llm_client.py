@@ -52,6 +52,12 @@ PROMPT_TEMPLATE = """当前知识点：{knowledge_point}
 
 该学生当前状态：掌握度={mastery_level}，detail_level={detail_level}，encourage_level={encourage_level}
 {conversation_context_block}
+该学生完整学情画像（已学过的知识点掌握情况，供你判断范围模糊/依赖个人情况的诉求要不要先问清楚——
+比如"给我列个复习计划"，如果这里已经能看出哪些知识点薄弱/该复习，就不用再问学生"你哪里不会"，
+直接结合这份画像出方案；如果画像是空的、或者答不了学生问题里真正缺的那部分（比如没写"还有多久
+考试""每天能投多久"这类只有学生自己知道的信息），才需要反问）：
+{student_profile_summary}
+
 可用的可视化素材（只能从下面列表里选，不能杜撰不存在的素材）：
 {available_media_manifest}
 
@@ -66,6 +72,13 @@ PROMPT_TEMPLATE = """当前知识点：{knowledge_point}
 2. 主动学习（"我想学第三章""我对压力角不太懂"）→ 判断是章节级还是知识点级需求，按掌握程度（mastery_level）调整讲解深度和讲法（类比多/公式少 vs 直接上公式推导）
 3. 自测复习（"我要复习""考前自测一下"）→ 优先给结构化复习清单，按知识点先修顺序安排
 4. 可视化探索（"演示一下""拖动看看"）→ 引导学生动手尝试，观察结果后追问"你看到了什么规律""为什么会这样"，而不是直接告诉答案
+5. 范围模糊/依赖个人情况的诉求（"给我列个复习计划""帮我梳理一下这门课""我该先学哪个"这类，不是
+   问某一个具体知识点，而是要一个跨知识点的安排/判断）→ 先看上面的完整学情画像和"之前的对话"
+   能不能覆盖回答所需要的信息；缺的是画像/历史里已经有的（比如哪里薄弱），不用再问，直接结合
+   已有数据出方案；缺的是只有学生自己知道的信息（还有多久考试、每天能投入多少时间、想不想聚焦
+   某几章），先问清楚这一个最关键的缺口，不要在信息不够的情况下直接假设/瞎猜给一个通用方案。
+   这一条不适用于范围明确的具体问题（比如"什么是转动副"）——那类问题不需要为了"了解学生情况"
+   额外反问，直接回答/引导即可，不要把这条规则用成"逢事必先问一堆背景信息"
 
 # 苏格拉底式引导（每次回应尽量落实，不是空泛地"多提问"）
 - 引导而非直接给结论：面对"这个怎么算/这是什么"，先反问"你打算怎么判断？""你觉得可能是哪种情况？"
@@ -75,11 +88,15 @@ PROMPT_TEMPLATE = """当前知识点：{knowledge_point}
 
 # 任务
 1. 如果上面有"之前的对话"，先理解学生这句话是不是在追问/指代前面聊过的内容（比如"它""这样的话""再讲讲"），
-   不要把这句话当成孤立的新问题重新讲一遍已经讲过的内容，要接着上文继续，除非学生明显换了话题
-2. 结合上面的场景判断和苏格拉底式引导原则生成回应内容。只有学生明确要直接答案、或者是"自测复习"这类
-   需要结构化产出的场景时，才用四步结构（一句话讲本质→打比方→分层展开→收尾"所以呢"）完整展开，
-   篇幅按detail_level伸缩；其余场景（尤其是报错求助、可视化探索）优先用引导性提问，不要一次性把结论讲完；
-   如果是追问，可以跳过"一句话讲本质"这类开场，直接接着回应
+   不要把这句话当成孤立的新问题重新讲一遍已经讲过的内容，要接着上文继续，除非学生明显换了话题；
+   如果"之前的对话"最后一轮是你自己提出的场景5澄清问题，这一轮学生的回答就是在答那个问题，直接
+   拿去结合学情画像出方案，不要再问一遍
+2. 结合上面的场景判断和苏格拉底式引导原则生成回应内容。只有学生明确要直接答案、或者是"自测复习"/
+   场景5这类需要结构化产出的场景时，才用四步结构（一句话讲本质→打比方→分层展开→收尾"所以呢"）
+   完整展开，篇幅按detail_level伸缩；其余场景（尤其是报错求助、可视化探索）优先用引导性提问，
+   不要一次性把结论讲完；如果是追问，可以跳过"一句话讲本质"这类开场，直接接着回应；如果是场景5
+   且信息够用可以出方案了，用Markdown格式输出这份方案（## 标题分组、- [ ] 复选框列表），方便
+   学生一眼看清楚结构，其余场景不要用Markdown格式，保持口语化
 3. 判断这道题/这个问题是否需要配视觉素材，如果需要，从可用素材里选一个最合适的，不要什么都配
 
 # 媒体选择判断依据（按优先级）
@@ -274,14 +291,20 @@ FALLBACK_REPLY_PROMPT_TEMPLATE = """你是"机械小助手"，河南科技大学
 课程的学习伙伴。
 
 {conversation_context_block}
+该学生完整学情画像（供你判断"跨知识点的安排/判断类"诉求要不要利用已有数据回答，而不是
+死板地当成"分类模块没认出来就是超纲"）：
+{student_profile_summary}
+
 学生刚发来这句话：
 {message}
 
 # 背景
-分类模块判断这句话没有涉及课程范围内的任何知识点——但这本身可能对应好几种完全不同的情况，
-不要机械地当成"只有一种可能"：
+分类模块判断这句话没有涉及课程范围内的任何**单个**知识点——但这本身可能对应好几种完全不同
+的情况，不要机械地当成"只有一种可能"：
 - 学生只是打招呼/寒暄/道谢/告别，压根没打算问知识点
 - 学生问了课程范围外的东西（其他课程、生活闲聊、跟机械原理无关的内容）
+- 学生问的是跨知识点的安排/判断（"给我列个复习计划""帮我梳理一下这门课""我该先学哪个"），
+  不对应某一个具体知识点，但明确是课程相关的诉求
 - 学生的话里其实带着知识点，只是分类模块没识别出来（比如用词很口语化、缩写、错别字，
   或者问的是这门课确实没覆盖到的细分领域）
 - 学生的表达太模糊/不完整，看不出想问什么
@@ -291,12 +314,20 @@ FALLBACK_REPLY_PROMPT_TEMPLATE = """你是"机械小助手"，河南科技大学
 - 打招呼/寒暄 -> 像正常人一样回应，顺带提一句你能帮上什么忙（讲知识点/3D演示/自测出题），
   不要机械地报菜单
 - 真的超纲/无关 -> 委婉说明这不在你的服务范围内，不用逐条列举课程目录
-- 看起来可能跟课程有关但你能理解意思 -> 直接尝试用你自己的知识回答，不要因为"分类模块
-  没认出来"就拒绝回答，那样对学生很不友好；只在真的看不懂在问什么的时候才反问澄清
+- 跨知识点的安排/判断类诉求 -> 先看上面的学情画像和"之前的对话"能不能覆盖回答所需要的信息；
+  缺的是画像/历史里已经有的（比如哪里薄弱），不用再问，直接结合已有数据用Markdown格式
+  （## 标题分组、- [ ] 复选框列表）给一份方案；缺的是只有学生自己知道的信息（还有多久
+  考试、每天能投入多少时间、想聚焦哪几章），先问清楚这一个最关键的缺口，不要直接假设/
+  瞎猜给一个通用方案——如果"之前的对话"最后一轮就是你自己提的这类澄清问题，这轮学生的
+  回答就是在答，直接结合画像出方案，不要再问一遍
+- 看起来可能跟课程有关但你能理解意思（且是范围明确的具体问题）-> 直接尝试用你自己的知识
+  回答，不要因为"分类模块没认出来"就拒绝回答，那样对学生很不友好；只在真的看不懂在问什么
+  的时候才反问澄清
 - 太模糊看不懂 -> 反问学生想问什么，不要瞎猜
 
 不要提"分类""关键词""覆盖范围""知识点列表"这类技术性说法，学生感受不到、也不需要知道
-你内部是怎么判断的。直接输出你的回复文本，不要输出多余的解释或JSON。"""
+你内部是怎么判断的。除非是"跨知识点的安排/判断类"诉求且信息够用要输出Markdown方案，
+其余情况直接输出你的回复文本，不要输出多余的解释或JSON。"""
 
 
 def _mock_fallback_reply(message: str) -> str:
@@ -305,7 +336,7 @@ def _mock_fallback_reply(message: str) -> str:
     return "[MOCK-LLM 占位输出] 这句话好像不属于《机械原理》《机械设计基础》的内容，能换个说法或者说明具体想问哪部分吗？"
 
 
-def generate_fallback_reply(message: str, conversation_context: str = "") -> str:
+def generate_fallback_reply(message: str, conversation_context: str = "", student_profile_summary: str = "") -> str:
     """分类模块判断这句话没有命中任何知识点时的兜底回复生成——不是无脑返回一句写死的
     "不在覆盖范围内"，而是把判断"这到底是问候/闲聊/超纲问题/表达模糊"这件事也交给LLM
     自己做（原因见 FALLBACK_REPLY_PROMPT_TEMPLATE 顶部说明）：关键词/规则判断只适合
@@ -319,7 +350,11 @@ def generate_fallback_reply(message: str, conversation_context: str = "") -> str
         return _mock_fallback_reply(message)
 
     context_block = f"之前的对话：\n{conversation_context}\n" if conversation_context else ""
-    prompt = FALLBACK_REPLY_PROMPT_TEMPLATE.format(conversation_context_block=context_block, message=message)
+    prompt = FALLBACK_REPLY_PROMPT_TEMPLATE.format(
+        conversation_context_block=context_block,
+        student_profile_summary=student_profile_summary or "（没有画像数据）",
+        message=message,
+    )
     try:
         return _call_llm(prompt).strip()
     except (urllib.error.URLError, urllib.error.HTTPError) as e:
@@ -485,7 +520,7 @@ def judge_fill_blank_llm(stem: str, correct_answers: list, student_answer: str) 
 
 
 def generate_explanation_and_media(knowledge_point: KnowledgePoint, message: str, student_state: dict,
-                                    conversation_context: str = "") -> dict:
+                                    conversation_context: str = "", student_profile_summary: str = "") -> dict:
     """对外唯一入口：给定知识点+学生消息+学情状态，返回 {explanation, media:{content_id, reason}}。
 
     student_state 预期字段（暂时都给默认值，等表B/共享个性化层节点接入后传真实值）：
@@ -496,6 +531,12 @@ def generate_explanation_and_media(knowledge_point: KnowledgePoint, message: str
     conversation_context: conversation_memory.build_context_text() 生成的"之前聊了什么"文本，
       空字符串表示没有历史（第一次对话/本地缓冲还没有记录），此时对应的模板段落直接留空，
       不会误导模型以为"之前没聊过"就是"确定是新话题"——只是没有可参考的历史而已。
+
+    student_profile_summary: mastery_model.format_profile_summary_text() 生成的"这个学生在
+      全部已学知识点上的掌握情况"文本（不是只有当前kp这一条）——给PROMPT_TEMPLATE场景5
+      （复习计划/跨知识点安排类诉求）判断"该不该反问"用：能从这份画像里看出来的就不用问学生，
+      画像答不了的才需要问。留空表示调用方没传（不应该发生，server.py每次都会算好传进来），
+      模板里对应段落会显示成空字符串，模型会看到"没有数据"从而倾向于反问，不算错误的降级。
     """
     student_state = student_state or {}
     student_state.setdefault("mastery_level", "未学")
@@ -514,6 +555,7 @@ def generate_explanation_and_media(knowledge_point: KnowledgePoint, message: str
         detail_level=student_state["detail_level"],
         encourage_level=student_state["encourage_level"],
         conversation_context_block=context_block,
+        student_profile_summary=student_profile_summary or "（没有画像数据）",
         available_media_manifest=knowledge_point.media_manifest_text(),
         message=message,
     )

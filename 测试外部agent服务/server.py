@@ -19,7 +19,10 @@ from urllib.parse import urlparse, parse_qs
 
 from knowledge_base import KNOWLEDGE_POINTS
 from llm_client import generate_explanation_and_media, classify_knowledge_points_llm, generate_fallback_reply
-from mastery_model import record_answer, record_qualitative_signal, get_profile, get_due_for_review, get_question
+from mastery_model import (
+    record_answer, record_qualitative_signal, get_profile, get_due_for_review, get_question,
+    format_profile_summary_text,
+)
 from signal_log import get_signals, SIGNAL_TYPES, POLARITIES
 import conversation_memory
 import quiz
@@ -243,6 +246,13 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         # （极端情况，理论上不应该发生，因为任务流那边conversation_id是平台自动生成的）。
         effective_student_id = student_id or (f"匿名_{conversation_id}" if conversation_id else "匿名学生")
 
+        # 完整学情画像文本（跨全部知识点，不是只有当前这一轮命中的knowledge_point）——讲解
+        # 生成和兜底回复都要用它来判断"给我列个复习计划""我该先学哪个"这类范围模糊/依赖个人
+        # 情况的诉求该不该反问（见 llm_client.py PROMPT_TEMPLATE/FALLBACK_REPLY_PROMPT_TEMPLATE
+        # 场景5的说明）：能从画像里看出来的就不用问学生，只有画像也答不了的信息缺口才需要反问。
+        # 提前算一次，两条分支（分类到kp/分类不到走兜底）都用得上。
+        student_profile_summary = format_profile_summary_text(effective_student_id)
+
         # ------------------------------------------------------------------
         # 车道A/C「出题-判分」分支：不走"在超星任务流里另搭判断节点"这条路，出题和收
         # 学生作答复用的是同一条 /agent 转发链路（见 quiz.py 模块顶部说明）。这段必须
@@ -334,7 +344,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             # 告别，或者分类模块本身没理解到但其实是相关问题。不用写死的关键词规则去猜
             # 是哪种情况（那样只适合覆盖有限的、能穷举的说法），交给LLM自己判断怎么
             # 自然回应，见 generate_fallback_reply()/FALLBACK_REPLY_PROMPT_TEMPLATE。
-            reply = generate_fallback_reply(message, conversation_context)
+            reply = generate_fallback_reply(message, conversation_context, student_profile_summary)
             conversation_memory.append_turn(conversation_id, message, reply, student_id)
             response_payload = {
                 "reply": reply,
@@ -369,7 +379,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             "encourage_level": data.get("encourage_level", "中"),
         }
 
-        result = generate_explanation_and_media(kp, message, student_state, conversation_context)
+        result = generate_explanation_and_media(kp, message, student_state, conversation_context, student_profile_summary)
         media = result.get("media", {}) or {}
         reply = result.get("explanation", "")
         conversation_memory.append_turn(conversation_id, message, reply, student_id)

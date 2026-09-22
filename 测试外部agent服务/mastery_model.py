@@ -364,6 +364,29 @@ def get_profile(student_id: str) -> dict:
     return {"student_id": student_id, "knowledge_points": profile}
 
 
+def format_profile_summary_text(student_id: str) -> str:
+    """把get_profile()的结果格式化成一段给LLM看的文本——server.py在生成讲解/兜底回复之前
+    都会调这个，喂给llm_client.py里新增的"场景5：范围模糊/依赖个人情况的诉求"判断逻辑用
+    （比如"给我列个复习计划"）：模型能直接看到这个学生在**全部**已学知识点上的掌握情况，
+    不需要再问学生"你哪里不会"——只有当画像答不了学生问题里真正缺的那部分（比如没写"还有
+    多久考试"这类只有学生自己知道的主观信息）时，才应该反问。
+
+    不用student_id（未登录/系统变量没绑定）或者这个学生完全没有学习记录（新学生）时返回
+    明确写着"没有数据"的提示，而不是空字符串——让模型清楚知道"这不是没有薄弱点，是压根
+    没数据"，避免它误判成"这个学生什么都会"。
+    """
+    if not student_id:
+        return "（没有学生身份信息，无法读取学情画像）"
+    profile = get_profile(student_id)["knowledge_points"]
+    if not profile:
+        return "（该学生目前没有任何学习/答题记录——新学生或数据还没积累起来，无法从画像判断薄弱点）"
+    lines = []
+    for row in profile:
+        tag = "（已到复习节点）" if row["needs_review"] else ""
+        lines.append(f"- {row['knowledge_point_name']}：{row['mastery_state']}{tag}")
+    return "该学生在已学过的知识点上的掌握情况（未列出的知识点=从没学过，没有数据）：\n" + "\n".join(lines)
+
+
 def get_due_for_review(student_id: str) -> dict:
     """借SM-2"该不该提醒复习"的间隔判断思路：从表B里挑出 needs_review=True 的知识点，
     给触发器/车道C复习推送、5.2教师端学情预警用，不用另外维护一张"复习计划表"。
