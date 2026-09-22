@@ -29,7 +29,9 @@ import re
 from typing import Optional
 
 from mastery_model import get_question, iter_questions, get_due_for_review
-from llm_client import judge_fill_blank_llm, detect_quiz_request_llm, is_answering_pending_question_llm
+from llm_client import judge_fill_blank_llm, detect_quiz_request_llm, is_answering_pending_question_llm, decide_3d_visual_llm
+import mechanism_library
+import visual_store
 
 # 出题只从"有真实标准答案、能自动判分"的题型里选，short_answer被排除在外（见上面模块docstring）。
 AUTO_GRADABLE_TYPES = {"single_choice", "true_false", "multiple_choice", "fill_blank"}
@@ -112,6 +114,48 @@ def question_display_content_id(q: dict) -> str:
     只取第一张图——多图题目这里暂不处理，够用即可，等真遇到多图题库反馈效果不好再扩展。"""
     if q.get("stem_images"):
         return f"quiz_{q['id']}_0"
+    return "none"
+
+
+def decide_question_visual_content_id(q: dict) -> str:
+    """题目该配什么视觉内容——教材原图 > 机构库3D模拟器（微调参数）> runtime生成的3D场景 >
+    不配图，按这个优先级依次尝试，返回server.py /viewer认得的content_id。
+
+    题库自带的stem_images优先级最高：那是真实教材配图，比LLM临时判断/生成的东西更可信，
+    不应该被下面两条动态路径抢掉，跟question_display_content_id()保持一致的判断顺序。
+
+    机构库和runtime场景都来自llm_client.decide_3d_visual_llm()一次判断——那边只负责问LLM，
+    LLM会幻觉（编一个不存在的content_id、给一个清单外的参数名、吐出一个没有objects字段的
+    烂scene），过滤幻觉是这里的责任：content_id必须真的在mechanism_library.LIBRARY里、
+    scene必须至少有个非空的objects列表，任何一步校验不过直接退化成"none"，不能让一个
+    半成品的3D内容展示给学生看。
+    """
+    image_content_id = question_display_content_id(q)
+    if image_content_id != "none":
+        return image_content_id
+
+    try:
+        decision = decide_3d_visual_llm(q["stem"])
+    except Exception:
+        # 决策链路本身不应该因为3D配图这个锦上添花的功能而拖垮出题主流程，
+        # 出问题就当作没有可配的图，跟下面mode匹配不上的兜底路径行为一致
+        return "none"
+
+    mode = decision.get("mode")
+
+    if mode == "library":
+        content_id = decision.get("content_id")
+        if content_id not in mechanism_library.LIBRARY:
+            return "none"  # LLM幻觉出一个清单里没有的机构，不能硬跳转到不存在的路由
+        params = mechanism_library.clamp_params(content_id, decision.get("params") or {})
+        return visual_store.store_visual({"kind": "library", "content_id": content_id, "params": params})
+
+    if mode == "scene_json":
+        scene = decision.get("scene") or {}
+        if not isinstance(scene.get("objects"), list) or not scene["objects"]:
+            return "none"  # 没有objects的场景渲染出来是一片空白，不如干脆不配图
+        return visual_store.store_visual({"kind": "scene", "scene": scene})
+
     return "none"
 
 

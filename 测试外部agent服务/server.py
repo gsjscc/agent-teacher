@@ -15,7 +15,7 @@ import mimetypes
 import os
 from logging.handlers import RotatingFileHandler
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, urlencode
 
 from knowledge_base import KNOWLEDGE_POINTS
 from llm_client import (
@@ -29,9 +29,10 @@ from mastery_model import (
 from signal_log import get_signals, SIGNAL_TYPES, POLARITIES
 import conversation_memory
 import quiz
+import mechanism_library
+import visual_store
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SIM_DIR = os.path.join(BASE_DIR, "..", "四连杆3D模拟器")
 TEXTBOOK_IMG_DIR = os.path.join(BASE_DIR, "..", "教材图片")
 QUIZ_DIR = os.path.join(BASE_DIR, "..", "题库")
 QUIZ_IMAGES_DIR = os.path.join(QUIZ_DIR, "images")
@@ -143,6 +144,209 @@ IMAGE_MANIFEST = {
     "img_chain_silent": {"file": "第十三章图/image5.png", "title": "齿形链"},
 }
 
+_NO_VISUAL_HTML = """<!doctype html>
+<html><head><meta charset="utf-8"><style>
+body { margin:0; font-family:-apple-system,sans-serif; background:#14161c; color:#7d818c;
+  display:flex; align-items:center; justify-content:center; height:100vh; font-size:13px; }
+</style></head>
+<body>（本轮回答无需配图）</body></html>"""
+
+
+def _render_scene_viewer_html(scene: dict) -> str:
+    """通用three.js渲染模板：只认scene这份JSON里的object类型（cuboid/sphere/pyramidSquare/
+    vector/line/point/polygon），不认识任何具体题目——题目相关的一切（用什么形状、坐标、
+    颜色）都由llm_client.decide_3d_visual_llm()决定好了写进scene，这个模板是纯粹的
+    "解释器"，跟mechanism_library那些手写定制代码的模拟器是两条完全不同的路径（见
+    llm_client.py VISUAL_DECISION_PROMPT_TEMPLATE里"方式一/方式二"的划分）。
+
+    scene_json通过json.dumps内嵌进<script>标签，把"</"转义成"<\\/"防止scene里如果出现
+    这个子串（理论上不会，纯数字/颜色/坐标不会带这个，但防御一下不出格）提前闭合script标签。
+    """
+    scene_json = json.dumps(scene, ensure_ascii=False).replace("</", "<\\/")
+    return """<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  html,body{margin:0;height:100%;background:#11151a;overflow:hidden;}
+  canvas{display:block;width:100%;height:100%;}
+  #hint{position:fixed;left:10px;bottom:8px;font-size:11px;color:#c9c9c9;
+    background:rgba(0,0,0,.35);padding:3px 8px;border-radius:6px;font-family:-apple-system,sans-serif;}
+</style></head>
+<body>
+<canvas id="c"></canvas>
+<div id="hint">拖拽旋转 · 滚轮缩放 · 由 agent runtime 生成</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+var SCENE_DATA = """ + scene_json + """;
+(function(){
+  var canvas = document.getElementById('c');
+  var renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  var scene3 = new THREE.Scene();
+  scene3.background = new THREE.Color(0x11151a);
+  var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  var world = new THREE.Group();
+  scene3.add(world);
+  scene3.add(new THREE.AmbientLight(0xffffff, 0.7));
+  var dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(5,8,6);
+  scene3.add(dir);
+
+  function resize(){
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(canvas);
+
+  function makeTextSprite(text, color){
+    var cvs = document.createElement('canvas');
+    var ctx = cvs.getContext('2d');
+    var fontSize = 42;
+    ctx.font = fontSize + 'px sans-serif';
+    var w = Math.max(64, ctx.measureText(text).width + 24);
+    cvs.width = w; cvs.height = fontSize + 24;
+    ctx.font = fontSize + 'px sans-serif';
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0,0,cvs.width,cvs.height);
+    ctx.fillStyle = color || '#fff';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 12, cvs.height/2);
+    var tex = new THREE.CanvasTexture(cvs);
+    var mat = new THREE.SpriteMaterial({map:tex, depthTest:false});
+    var sprite = new THREE.Sprite(mat);
+    sprite.scale.set(cvs.width/140, cvs.height/140, 1);
+    return sprite;
+  }
+  function addLabel(pos, text, color){
+    var s = makeTextSprite(text, color);
+    s.position.set(pos[0], pos[1]+0.45, pos[2]);
+    world.add(s);
+  }
+
+  function buildScene(def){
+    if(def.axes){ world.add(new THREE.AxesHelper(5)); }
+    (def.objects||[]).forEach(function(obj){
+      var color = new THREE.Color(obj.color || '#4f8ff0');
+      if(obj.type === 'cuboid'){
+        var geo = new THREE.BoxGeometry(obj.size[0], obj.size[1], obj.size[2]);
+        var mat = new THREE.MeshStandardMaterial({color:color, transparent:true, opacity: obj.opacity == null ? 1 : obj.opacity, side:THREE.DoubleSide});
+        var mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
+        world.add(mesh);
+        var edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({color:0xffffff}));
+        edges.position.copy(mesh.position);
+        world.add(edges);
+        if(obj.label) addLabel(obj.position, obj.label, obj.color);
+      } else if(obj.type === 'sphere'){
+        var sgeo = new THREE.SphereGeometry(obj.radius || 1, 24, 16);
+        var smat = new THREE.MeshStandardMaterial({color:color, transparent:true, opacity: obj.opacity == null ? 1 : obj.opacity});
+        var smesh = new THREE.Mesh(sgeo, smat);
+        smesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
+        world.add(smesh);
+        if(obj.label) addLabel(obj.position, obj.label, obj.color);
+      } else if(obj.type === 'pyramidSquare'){
+        var a = obj.base, h = obj.height;
+        var r = a / Math.SQRT2;
+        var pgeo = new THREE.CylinderGeometry(0, r, h, 4);
+        var pmat = new THREE.MeshStandardMaterial({color:color, transparent:true, opacity: obj.opacity == null ? 1 : obj.opacity, side:THREE.DoubleSide});
+        var pmesh = new THREE.Mesh(pgeo, pmat);
+        pmesh.rotation.y = Math.PI/4;
+        pmesh.position.set(obj.position[0], obj.position[1] + h/2, obj.position[2]);
+        world.add(pmesh);
+        var pedges = new THREE.LineSegments(new THREE.EdgesGeometry(pgeo), new THREE.LineBasicMaterial({color:0xffffff}));
+        pedges.rotation.y = Math.PI/4;
+        pedges.position.copy(pmesh.position);
+        world.add(pedges);
+      } else if(obj.type === 'polygon'){
+        var pts = obj.points.map(function(p){ return new THREE.Vector3(p[0], p[1], p[2]); });
+        var pgeo2 = new THREE.BufferGeometry();
+        var verts = [];
+        for(var i=1;i<pts.length-1;i++){
+          verts.push(pts[0].x,pts[0].y,pts[0].z, pts[i].x,pts[i].y,pts[i].z, pts[i+1].x,pts[i+1].y,pts[i+1].z);
+        }
+        pgeo2.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+        pgeo2.computeVertexNormals();
+        var pmat2 = new THREE.MeshStandardMaterial({color:color, transparent:true, opacity: obj.opacity == null ? 0.6 : obj.opacity, side:THREE.DoubleSide});
+        world.add(new THREE.Mesh(pgeo2, pmat2));
+        var loopPts = pts.concat([pts[0]]);
+        var lineGeo = new THREE.BufferGeometry().setFromPoints(loopPts);
+        world.add(new THREE.Line(lineGeo, new THREE.LineBasicMaterial({color:0xffffff})));
+      } else if(obj.type === 'vector'){
+        var from = new THREE.Vector3(obj.from[0], obj.from[1], obj.from[2]);
+        var to = new THREE.Vector3(obj.to[0], obj.to[1], obj.to[2]);
+        var dirVec = new THREE.Vector3().subVectors(to, from);
+        var len = dirVec.length();
+        var arrow = new THREE.ArrowHelper(dirVec.clone().normalize(), from, len, color.getHex(), len*0.18, len*0.1);
+        world.add(arrow);
+        if(obj.label) addLabel(to.toArray(), obj.label, obj.color);
+      } else if(obj.type === 'line'){
+        var lpts = obj.points.map(function(p){ return new THREE.Vector3(p[0], p[1], p[2]); });
+        var lgeo = new THREE.BufferGeometry().setFromPoints(lpts);
+        var lmat = obj.dashed
+          ? new THREE.LineDashedMaterial({color:color, dashSize:0.2, gapSize:0.12})
+          : new THREE.LineBasicMaterial({color:color});
+        var line = new THREE.Line(lgeo, lmat);
+        if(obj.dashed) line.computeLineDistances();
+        world.add(line);
+        if(obj.label){
+          var mid = lpts[0].clone().add(lpts[lpts.length-1]).multiplyScalar(0.5);
+          addLabel(mid.toArray(), obj.label, obj.color);
+        }
+      } else if(obj.type === 'point'){
+        var ptgeo = new THREE.SphereGeometry(0.08, 12, 12);
+        var ptmat = new THREE.MeshStandardMaterial({color:color});
+        var ptmesh = new THREE.Mesh(ptgeo, ptmat);
+        ptmesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
+        world.add(ptmesh);
+        if(obj.label) addLabel(obj.position, obj.label, obj.color);
+      }
+    });
+  }
+
+  var dragging = false, lastX=0, lastY=0;
+  var yaw = 0.5, pitch = -0.35, dist = 12;
+  canvas.addEventListener('pointerdown', function(e){dragging=true; lastX=e.clientX; lastY=e.clientY;});
+  window.addEventListener('pointerup', function(){dragging=false;});
+  window.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    yaw += (e.clientX-lastX)*0.006;
+    pitch += (e.clientY-lastY)*0.006;
+    pitch = Math.max(-1.4, Math.min(1.4, pitch));
+    lastX=e.clientX; lastY=e.clientY;
+  });
+  canvas.addEventListener('wheel', function(e){
+    e.preventDefault();
+    dist = Math.max(4, Math.min(30, dist + e.deltaY*0.01));
+  }, {passive:false});
+
+  var baseLookAt = (SCENE_DATA.camera && SCENE_DATA.camera.lookAt) || [0,0,0];
+  if(SCENE_DATA.camera){
+    var b = SCENE_DATA.camera;
+    var dx = b.position[0]-b.lookAt[0], dz = b.position[2]-b.lookAt[2];
+    yaw = Math.atan2(dx, dz);
+    dist = Math.sqrt(dx*dx+dz*dz)+2;
+    pitch = -0.3;
+  }
+  function applyOrbit(){
+    var look = new THREE.Vector3(baseLookAt[0], baseLookAt[1], baseLookAt[2]);
+    var x = look.x + dist*Math.cos(pitch)*Math.sin(yaw);
+    var y = look.y + dist*Math.sin(pitch)*-1 + 4;
+    var z = look.z + dist*Math.cos(pitch)*Math.cos(yaw);
+    camera.position.set(x, y, z);
+    camera.lookAt(look);
+  }
+
+  buildScene(SCENE_DATA);
+  resize();
+  function animate(){
+    requestAnimationFrame(animate);
+    applyOrbit();
+    renderer.render(scene3, camera);
+  }
+  animate();
+})();
+</script>
+</body></html>"""
+
 
 class Handler(BaseHTTPRequestHandler):
     def _send_json(self, status, payload):
@@ -224,6 +428,33 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             return
 
         self._send_json(404, {"error": "image type not displayable"})
+
+    def _render_dynamic_visual(self, content_id):
+        """content_id格式v_<hex>，quiz.decide_question_visual_content_id()出题时存进
+        visual_store的动态视觉内容——两种kind：library（机构库+LLM微调过的参数）直接
+        302到对应模拟器并把参数拼进query string；scene（runtime生成的场景JSON）用
+        通用three.js模板渲染，模板本身不认识任何具体题目，只认scene这份数据。"""
+        payload = visual_store.get_visual(content_id)
+        if not payload:
+            # 进程重启后store会清空，或者content_id本身就是编的——降级成"无配图"而不是报错，
+            # 跟/viewer其他分支未识别content_id时的兜底行为一致
+            self._send_html(200, _NO_VISUAL_HTML)
+            return
+
+        if payload["kind"] == "library":
+            lib_content_id = payload["content_id"]
+            qs = urlencode(payload.get("params") or {})
+            location = f"/3d/{lib_content_id}/index.html" + (f"?{qs}" if qs else "")
+            self.send_response(302)
+            self.send_header("Location", location)
+            self.end_headers()
+            return
+
+        if payload["kind"] == "scene":
+            self._send_html(200, _render_scene_viewer_html(payload["scene"]))
+            return
+
+        self._send_html(200, _NO_VISUAL_HTML)
 
     # ------------------------------------------------------------------
     # POST /agent：任务流【插件】节点调这个接口
@@ -351,7 +582,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
                 knowledge_point_id = None
             else:
                 reply = quiz.format_question_for_display(q)
-                content_id = quiz.question_display_content_id(q)
+                content_id = quiz.decide_question_visual_content_id(q)
                 knowledge_point_id = q.get("knowledge_point_id")
                 # 记下这道题，等学生下一轮作答时才能判分——正确答案原样存题库里的格式，
                 # judge_answer() 按question_type知道该怎么解读这个字段
@@ -546,11 +777,22 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             self._send_json(200, get_due_for_review(student_id))
             return
 
-        if parsed.path == "/3d" or parsed.path == "/3d/":
-            self._send_static_under(SIM_DIR, "index.html")
-            return
         if parsed.path.startswith("/3d/"):
-            self._send_static_under(SIM_DIR, parsed.path[len("/3d/"):])
+            # 路径格式 /3d/<content_id>/<文件路径>，content_id对应mechanism_library.LIBRARY
+            # 里注册的某个机构模拟器文件夹——12个模拟器共用这一条路由，不用再各自写一遍
+            content_id, _, rel_path = parsed.path[len("/3d/"):].partition("/")
+            if content_id == "common.js":
+                # 3d动画/下11个章节的main.js都用 import '../common.js' 引这个共享场景搭建
+                # 工具模块（見common.js顶部说明），浏览器解析相对路径会请求到/3d/common.js，
+                # 不属于任何单个content_id文件夹，单独处理
+                self._send_static_under(os.path.join(BASE_DIR, "..", "3d动画"), "common.js")
+                return
+            entry = mechanism_library.LIBRARY.get(content_id)
+            if not entry:
+                self._send_json(404, {"error": "unknown mechanism content_id"})
+                return
+            sim_dir = os.path.join(BASE_DIR, "..", entry["folder"])
+            self._send_static_under(sim_dir, rel_path or "index.html")
             return
 
         if parsed.path.startswith("/media/"):
@@ -572,10 +814,16 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             qs = parse_qs(parsed.query)
             content_id = qs.get("content", ["none"])[0]
 
-            if content_id == "linkage_3d":
+            if content_id in mechanism_library.LIBRARY:
+                # 没带动态参数的机构库id（比如任务流其他地方直接写死content_id=linkage_3d），
+                # 用模拟器自己的默认滑块值展示，不需要经过visual_store
                 self.send_response(302)
-                self.send_header("Location", "/3d/index.html")
+                self.send_header("Location", f"/3d/{content_id}/index.html")
                 self.end_headers()
+                return
+
+            if content_id.startswith("v_"):
+                self._render_dynamic_visual(content_id)
                 return
 
             if content_id.startswith("quiz_"):
@@ -601,13 +849,7 @@ h1 {{ font-size:14px; font-weight:500; margin:14px 0 4px; }}
                 return
 
             # content_id == "none" 或其他未识别值：不配图的兜底页
-            html = """<!doctype html>
-<html><head><meta charset="utf-8"><style>
-body { margin:0; font-family:-apple-system,sans-serif; background:#14161c; color:#7d818c;
-  display:flex; align-items:center; justify-content:center; height:100vh; font-size:13px; }
-</style></head>
-<body>（本轮回答无需配图）</body></html>"""
-            self._send_html(200, html)
+            self._send_html(200, _NO_VISUAL_HTML)
             return
 
         self._send_json(200, {

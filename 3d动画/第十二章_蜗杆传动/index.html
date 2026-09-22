@@ -51,6 +51,21 @@
     }
   }
   </script>
+  <script>
+  // runtime-param-override: 允许 /viewer 通过 URL query 微调滑块初始值，取值范围由滑块自身 min/max 钳制
+  (function(){
+    var qs = new URLSearchParams(location.search);
+    document.querySelectorAll('input[type=range][id]').forEach(function(el){
+      if (!qs.has(el.id)) return;
+      var num = parseFloat(qs.get(el.id));
+      if (isNaN(num)) return;
+      var min = parseFloat(el.min), max = parseFloat(el.max);
+      if (!isNaN(min)) num = Math.max(min, num);
+      if (!isNaN(max)) num = Math.min(max, num);
+      el.value = num;
+    });
+  })();
+  </script>
   <script type="module" src="main.js"></script>
 </body>
 </html>

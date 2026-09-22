@@ -20,6 +20,8 @@ import re
 import urllib.request
 import urllib.error
 
+import mechanism_library
+
 
 def _load_dotenv():
     """极简 .env 加载器（不引入 python-dotenv 依赖，跟本服务"纯标准库"原则一致）。
@@ -674,3 +676,78 @@ def generate_explanation_and_media(knowledge_point: KnowledgePoint, message: str
         fallback = _mock_generate(knowledge_point, message, student_state)
         fallback["explanation"] = f"[LLM调用失败，已降级为占位输出：{e}] " + fallback["explanation"]
         return fallback
+
+
+VISUAL_DECISION_PROMPT_TEMPLATE = """题目：
+{stem}
+
+# 任务
+判断这道题是否"太抽象、配一张3D图/动画能帮学生理解"，如果需要，判断该用下面哪种方式呈现：
+
+## 方式一：机构库（优先尝试，题目讲的是具体机械结构/机构运动时用这个）
+下面是已经做好、经过检查的机构3D模拟器清单，只能从这里面选，选不中任何一条就不要用这种方式：
+{library_menu}
+如果匹配，从题干里能读出具体数值就填进params（比如"齿数z1=20"就填{{"z1":20}}），读不出的
+字段不要瞎编，直接不填，模拟器自己有默认值兜底。
+
+## 方式二：runtime生成场景（题目是纯几何体/向量/点线面这类抽象概念，方式一里没有对应机构时用这个）
+场景是一个JSON，渲染器只认这几种object类型，不要发明清单外的类型：
+- {{"type":"cuboid","position":[x,y,z],"size":[宽,高,深],"color":"#hex","opacity":0~1,"label":"文字"}}
+- {{"type":"sphere","position":[x,y,z],"radius":数字,"color":"#hex","opacity":0~1,"label":"文字"}}
+- {{"type":"pyramidSquare","position":[x,y,z]（底面中心）,"base":底边长,"height":高,"color":"#hex","opacity":0~1}}
+- {{"type":"vector","from":[x,y,z],"to":[x,y,z],"color":"#hex","label":"文字（如F=6N）"}}
+- {{"type":"line","points":[[x,y,z],...],"color":"#hex","dashed":true或false,"label":"文字"}}
+- {{"type":"point","position":[x,y,z],"color":"#hex","label":"文字"}}
+- {{"type":"polygon","points":[[x,y,z],...]（3个以上点，共面），"color":"#hex","opacity":0~1,"label":"文字"}}
+场景整体格式：{{"axes":true,"camera":{{"position":[x,y,z],"lookAt":[x,y,z]}},"objects":[...]}}
+坐标数值按题目给的真实尺寸/角度换算成合理的场景坐标即可，不需要严格单位换算。
+
+## 方式三：都不适合就老实说不需要配图，不要硬凑
+纯文字/概念辨析/没有空间结构的题目（比如"解释什么是自由度"这种），mode填none。
+
+只输出以下JSON，不要输出多余文字，三选一：
+方式一：{{"mode":"library","content_id":"上面菜单里的某个id","params":{{...}}}}
+方式二：{{"mode":"scene_json","scene":{{...}}}}
+方式三：{{"mode":"none"}}"""
+
+
+def _mock_decide_3d_visual(stem: str) -> dict:
+    """没配key时的降级判断：这个决策一旦出错要么关联到不存在的机构、要么生成渲染不出来的
+    JSON，风险比"暂时没有3D图"更高，所以保守地统一返回none，跟_mock_detect_style_change
+    "猜错代价高就不猜"是同一个理由，不用关键词表硬凑。"""
+    return {"mode": "none"}
+
+
+def decide_3d_visual_llm(stem: str) -> dict:
+    """判断题目要不要配3D图/动画，以及该用"机构库"还是"runtime生成场景"。返回的content_id/
+    scene在真正拼进content_id、存进visual_store之前，调用方（quiz.py）还需要再校验一遍
+    content_id是否真的在mechanism_library.LIBRARY里、scene是否有基本的objects字段——这里
+    只负责问LLM，不负责兜底校验，跟classify_knowledge_points_llm等其他决策函数一致的边界：
+    LLM会幻觉，过滤幻觉是调用方的责任，不是这一层的责任。
+
+    没配key/调用失败时降级成_mock_decide_3d_visual()（保守返回none）。
+
+    返回三种形状之一：
+      {"mode": "library", "content_id": str, "params": dict}
+      {"mode": "scene_json", "scene": dict}
+      {"mode": "none"}
+    """
+    if not QIANFAN_API_KEY:
+        return _mock_decide_3d_visual(stem)
+
+    prompt = VISUAL_DECISION_PROMPT_TEMPLATE.format(stem=stem, library_menu=mechanism_library.menu_text())
+    try:
+        raw_text = _call_llm(prompt)
+        result = _extract_json(raw_text)
+        mode = result.get("mode")
+        if mode == "library":
+            return {
+                "mode": "library",
+                "content_id": result.get("content_id"),
+                "params": result.get("params") or {},
+            }
+        if mode == "scene_json":
+            return {"mode": "scene_json", "scene": result.get("scene") or {}}
+        return {"mode": "none"}
+    except (urllib.error.URLError, urllib.error.HTTPError, ValueError, json.JSONDecodeError):
+        return _mock_decide_3d_visual(stem)
