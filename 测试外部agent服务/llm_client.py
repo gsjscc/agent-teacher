@@ -256,13 +256,19 @@ def _mock_generate(knowledge_point: KnowledgePoint, message: str, student_state:
 KC_TAGGING_PROMPT_TEMPLATE = """以下是本课程全部知识点的候选清单（id: 名称 - 关键词）：
 {candidates}
 
-学生这句话原文：
+{conversation_context_block}学生这句话原文：
 {text}
 
 # 任务
 判断这句话实际涉及候选清单里的哪些知识点（可能是1个，也可能是多个——比如学生同时问了
 "整转副判断"和"自由度计算"，就要把两个都列出来）。只能从上面的候选id里选，不能编造不存在的id；
 完全不涉及课程知识点内容的（比如闲聊、操作性提问）返回空列表。
+
+这句话本身可能很短、字面上看不出任何知识点（比如就是个选项字母"A""b"、"对""不知道""换一个"
+这类），不能因为字面信息不够就直接判空——先看上面"之前的对话"：如果最后一轮是你自己围绕
+某个知识点提的引导性问题/给的选项，学生这句话大概率是在接着回答那个问题，这种情况要把
+"之前的对话"里能看出来的那个知识点也算作命中，而不是让这轮对话因为一句"A"就断线；只有
+"之前的对话"也看不出在讨论哪个知识点、这句话本身又确实无法关联到任何候选知识点时，才返回空列表。
 
 只输出以下JSON，不要输出多余文字：
 {{"knowledge_point_ids": ["从候选id里选的0个或多个id"]}}"""
@@ -274,7 +280,7 @@ def _mock_classify_kc(text: str) -> list:
     return classify_knowledge_points_multi(text)
 
 
-def classify_knowledge_points_llm(text: str) -> list:
+def classify_knowledge_points_llm(text: str, conversation_context: str = "") -> list:
     """给一段学生原话（不一定是完整句子，可能是对话里的一轮），返回涉及的知识点列表（可能多个）。
 
     对应 [Dialogue-KT论文](../参考论文/Dialogue-KT_Knowledge_Tracing_in_Dialogues.pdf) 里"用LLM给
@@ -282,6 +288,11 @@ def classify_knowledge_points_llm(text: str) -> list:
     正确性评分0.93/1）。用来替代 knowledge_base.classify_knowledge_points_multi() 的纯关键词匹配：
     关键词匹配的死角是学生换个说法（比如描述"最短杆和最长杆之和"但没提"杆长条件"这个词）就会
     分类失败或漏标次要知识点，LLM能理解语义、不依赖字面关键词命中。
+
+    conversation_context 可选：server.py /agent 接口传入"之前的对话"文本，用来处理"学生这句话
+    字面上很短/看不出知识点，但其实是在回答上一轮我方追问"的情况（比如引导式讲解里问了
+    "A还是B？"，学生只回一个字母"A"）——不传时（比如parse_question_bank.py批量给题库打标签，
+    没有对话上下文这个概念）行为跟以前一致，纯粹按text本身语义判断。
 
     没配API key或调用失败时，降级为关键词匹配版本（不是直接报错断链路，跟 generate_explanation_and_media
     的降级策略一致）——这样 mastery_model.py 等调用方不需要关心key是否配置，接口形状不变。
@@ -291,7 +302,10 @@ def classify_knowledge_points_llm(text: str) -> list:
     if not QIANFAN_API_KEY:
         return _mock_classify_kc(text)
 
-    prompt = KC_TAGGING_PROMPT_TEMPLATE.format(candidates=_kp_candidates_text(), text=text)
+    context_block = f"之前的对话：\n{conversation_context}\n\n" if conversation_context else ""
+    prompt = KC_TAGGING_PROMPT_TEMPLATE.format(
+        candidates=_kp_candidates_text(), text=text, conversation_context_block=context_block
+    )
     try:
         raw_text = _call_llm(prompt)
         result = _extract_json(raw_text)
@@ -442,7 +456,7 @@ def is_answering_pending_question_llm(stem: str, question_type: str, student_mes
 QUIZ_REQUEST_PROMPT_TEMPLATE = """以下是本课程全部知识点的候选清单（id: 名称 - 关键词）：
 {candidates}
 
-学生这句话原文：
+{conversation_context_block}学生这句话原文：
 {message}
 
 # 任务
@@ -453,6 +467,11 @@ QUIZ_REQUEST_PROMPT_TEMPLATE = """以下是本课程全部知识点的候选清�
 思路""考前该怎么复习"），这不算想现在做题——这类诉求应该判false，交给别的环节先跟学生
 聊清楚复习的范围/时间再说，不要一上来就扔一道题打断这个过程。只有学生明确表达"要做题/
 要被考"这个动作本身（哪怕带着"复习"这个词，比如"帮我复习一下，出几道题"），才判true。
+
+还要注意区分：如果上面"之前的对话"最后一轮是你自己提的引导性问题（哪怕带了A/B/C这类
+选项），学生这句话哪怕很短（一个字母"A"、"对""不知道"这种），也是在回答那个问题，不是
+在提新的出题请求——这种情况必须判false，不能因为看不出这句话本身的语义就默认往"要不要
+出题"上靠。
 
 如果判true，再看学生有没有指定想练哪个知识点/章节——指定了就从候选清单里选对应的id，
 没指定（比如就说"随便考我"）就是null，不能编造候选清单里没有的id。
@@ -469,17 +488,25 @@ def _mock_detect_quiz_request(message: str) -> dict:
     return {"is_quiz_request": any(kw in message for kw in keywords), "target_knowledge_point_id": None}
 
 
-def detect_quiz_request_llm(message: str) -> dict:
+def detect_quiz_request_llm(message: str, conversation_context: str = "") -> dict:
     """判断学生是不是想自测出题，以及有没有指定知识点。不用关键词表——学生说"帮我复习一下"
     "想练几道题看看"这类没有事先枚举到的说法，关键词匹配会漏判，只有语义理解能兜住，跟
     classify_knowledge_points_llm是同一个理由。没配key/调用失败时降级成 _mock_detect_quiz_request()。
+
+    conversation_context 可选，理由同 classify_knowledge_points_llm：不传时只按message本身
+    判断，实测过一次真实bug——引导式讲解问了"A还是B"，学生回一个字母"A"，没有上下文的话
+    这句话单独看很容易被判成"随便考我"这类意图不明的出题请求，凭空冒出一道完全无关的新题
+    把学生正在回答的问题打断掉；传了上下文之后，prompt里专门有一条规则拦这种情况。
 
     返回 {"is_quiz_request": bool, "target_knowledge_point_id": Optional[str]}。
     """
     if not QIANFAN_API_KEY:
         return _mock_detect_quiz_request(message)
 
-    prompt = QUIZ_REQUEST_PROMPT_TEMPLATE.format(candidates=_kp_candidates_text(), message=message)
+    context_block = f"之前的对话：\n{conversation_context}\n\n" if conversation_context else ""
+    prompt = QUIZ_REQUEST_PROMPT_TEMPLATE.format(
+        candidates=_kp_candidates_text(), message=message, conversation_context_block=context_block
+    )
     try:
         raw_text = _call_llm(prompt)
         result = _extract_json(raw_text)

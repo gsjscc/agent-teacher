@@ -339,7 +339,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
                 effective_student_id, style_change["detail_level_change"], style_change["encourage_level_change"]
             )
 
-        quiz_request = quiz.detect_quiz_request(message)
+        quiz_request = quiz.detect_quiz_request(message, conversation_context)
         if quiz_request["is_quiz_request"]:
             # 同上：挑"该复习的薄弱知识点"要读表B的due_for_review，必须用effective_student_id，
             # 否则匿名学生哪怕之前已经答错了好几道题，pick_question内部的due检查也读不到
@@ -376,7 +376,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         # 表达（口语化、缩写、错别字）就会被误判成"没有知识点"，这类死角只有语义理解
         # 能兜住。多个候选时取第一个作为本轮主要讲解的知识点（没有单独的置信度排序，
         # 但对"就地生成一份讲解"这个场景来说足够用）。
-        matched_kps = classify_knowledge_points_llm(message)
+        matched_kps = classify_knowledge_points_llm(message, conversation_context)
         if not matched_kps:
             # 分类不到知识点，不代表只有"超纲问题"一种可能——也可能是打招呼/寒暄/道谢/
             # 告别，或者分类模块本身没理解到但其实是相关问题，或者干脆是一句纯粹的风格反馈

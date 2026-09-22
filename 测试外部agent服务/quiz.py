@@ -35,16 +35,19 @@ from llm_client import judge_fill_blank_llm, detect_quiz_request_llm, is_answeri
 AUTO_GRADABLE_TYPES = {"single_choice", "true_false", "multiple_choice", "fill_blank"}
 
 
-def detect_quiz_request(message: str) -> dict:
+def detect_quiz_request(message: str, conversation_context: str = "") -> dict:
     """判断学生是不是想自测出题、有没有指定知识点——直接转发给 llm_client.detect_quiz_request_llm()，
     不用关键词表：关键词只能覆盖"考考我""来道题"这类提前想到的说法，学生说"帮我复习一下"
     "想练几道题看看"照样是出题请求，但命中不了任何写死的关键词，只有语义理解能兜住，
     跟 llm_client.classify_knowledge_points_llm() 是同一个理由。这里单独包一层是为了让
     server.py 只依赖 quiz.py 这一个模块，不用同时import llm_client，边界更清晰。
 
+    conversation_context 透传给 detect_quiz_request_llm，用来分辨"学生在回答我方上一轮的
+    引导性问题（哪怕只回一个字母）"和"真的要出新题"，避免把一句"A"误判成出题请求。
+
     返回 {"is_quiz_request": bool, "target_knowledge_point_id": Optional[str]}。
     """
-    return detect_quiz_request_llm(message)
+    return detect_quiz_request_llm(message, conversation_context)
 
 
 def looks_like_answering(q: dict, student_message: str) -> bool:
