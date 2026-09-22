@@ -38,6 +38,7 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 QUESTION_BANK_PATH = os.path.join(BASE_DIR, "..", "题库", "题库.json")
 STUDENT_MASTERY_PATH = os.path.join(DATA_DIR, "student_mastery.json")  # 表B
 ITEM_RATING_PATH = os.path.join(DATA_DIR, "item_ratings.json")  # 题目难度分（表B之外的辅助表，不直接暴露给平台）
+STUDENT_STYLE_PATH = os.path.join(DATA_DIR, "student_style.json")  # 学生的detail_level/encourage_level偏好，按学生持久化
 
 RATING_DEFAULT = 1500.0
 K_STUDENT = 32.0  # 学生能力分变化步长，比题目难度分快，符合"学生水平比题目难度更易变"的直觉
@@ -66,6 +67,10 @@ _KP_NAME_BY_ID = {kp.id: kp.name for kp in KNOWLEDGE_POINTS}
 # 因为目前就是单进程部署（同一台机器上一个systemd服务），锁的粒度按数据文件区分，
 # 避免答题更新和信号写入互相不必要地阻塞。
 _mastery_lock = threading.Lock()
+# detail_level/encourage_level偏好是单独一个文件（student_style.json），跟表B/题目难度表
+# 不是同一份数据、更新频率也低得多（只有学生明确表达风格诉求时才写），用独立的锁而不是复用
+# _mastery_lock，避免答题高频写入跟风格偏好这种低频写入互相排队等待。
+_style_lock = threading.Lock()
 
 
 # ----------------------------------------------------------------------
@@ -385,6 +390,66 @@ def format_profile_summary_text(student_id: str) -> str:
         tag = "（已到复习节点）" if row["needs_review"] else ""
         lines.append(f"- {row['knowledge_point_name']}：{row['mastery_state']}{tag}")
     return "该学生在已学过的知识点上的掌握情况（未列出的知识点=从没学过，没有数据）：\n" + "\n".join(lines)
+
+
+# ----------------------------------------------------------------------
+# detail_level/encourage_level 偏好——真正的数据源
+#
+# 之前server.py里这两个字段是`data.get("detail_level", "中")`，也就是从任务流插件节点转发
+# 过来的请求体里读——但从来没有任何地方会真的填这个字段，所以永远只能拿到硬编码的默认值"中"，
+# 跟"没接真实数据源"是一回事。现在改成：按学生持久化存进student_style.json（跟表B同类的
+# 本地JSON文件持久化方式，字段设计对齐提示词库.md"风格调整意图识别节点"一节），由
+# detect_style_change_llm()识别到学生明确表达"想要更详细/更简单/更鼓励/更严格直接"时才更新，
+# 平时读的都是这个学生自己上一次表达过的真实偏好（或者从没表达过时的默认值"中"），不是
+# 猜出来的、也不是请求方随便传一个就能覆盖的。
+# ----------------------------------------------------------------------
+_STYLE_LEVELS = ["低", "中", "高"]
+
+
+def _shift_style_level(current: str, change: str, increase_word: str, decrease_word: str) -> str:
+    """把"低/中/高"三档按学生表达的变化量（更详细/更简单，或更鼓励/更严格直接）移动一档，
+    到顶/到底就不再往外走，不会越界成不存在的档位。current不是这三档之一时（脏数据/首次）
+    按"中"处理，不报错断链路。"""
+    idx = _STYLE_LEVELS.index(current) if current in _STYLE_LEVELS else 1
+    if change == increase_word:
+        idx = min(idx + 1, len(_STYLE_LEVELS) - 1)
+    elif change == decrease_word:
+        idx = max(idx - 1, 0)
+    return _STYLE_LEVELS[idx]
+
+
+def get_style_prefs(student_id: str) -> dict:
+    """讲解生成/兜底回复要用的detail_level/encourage_level真正来源。没有student_id
+    （访客/系统变量没绑定）或者这个学生从没表达过风格偏好时，返回默认值"中"/"中"——
+    默认值本身没问题，问题只在于"永远只能是默认值"，这个函数保证一旦学生表达过就能
+    读到真实值。"""
+    if not student_id:
+        return {"detail_level": "中", "encourage_level": "中"}
+    styles = _load_json(STUDENT_STYLE_PATH)
+    row = styles.get(student_id, {})
+    return {
+        "detail_level": row.get("detail_level", "中"),
+        "encourage_level": row.get("encourage_level", "中"),
+    }
+
+
+def update_style_prefs(student_id: str, detail_level_change: str, encourage_level_change: str) -> dict:
+    """detect_style_change_llm()判断出学生这句话在要求调整讲解方式时调用，把变化量落到
+    持久化的档位上并写回。detail_level_change/encourage_level_change取值是"更详细/更简单/
+    不变"和"更鼓励/更严格直接/不变"，跟llm_client.py里判断出来的字段值原样对应，这里不
+    重新解释语义，只负责"档位怎么挪、挪完存哪"。返回更新后的最新偏好，调用方（server.py）
+    可以直接拿去当这一轮student_state的detail_level/encourage_level用，不用再读一次。"""
+    if not student_id:
+        return {"detail_level": "中", "encourage_level": "中"}
+    with _style_lock:
+        styles = _load_json(STUDENT_STYLE_PATH)
+        row = styles.get(student_id, {"detail_level": "中", "encourage_level": "中"})
+        row["detail_level"] = _shift_style_level(row.get("detail_level", "中"), detail_level_change, "更详细", "更简单")
+        row["encourage_level"] = _shift_style_level(row.get("encourage_level", "中"), encourage_level_change, "更鼓励", "更严格直接")
+        row["last_updated"] = int(time.time())
+        styles[student_id] = row
+        _save_json(STUDENT_STYLE_PATH, styles)
+        return {"detail_level": row["detail_level"], "encourage_level": row["encourage_level"]}
 
 
 def get_due_for_review(student_id: str) -> dict:

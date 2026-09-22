@@ -547,6 +547,58 @@ def judge_fill_blank_llm(stem: str, correct_answers: list, student_answer: str) 
         return _mock_judge_fill_blank(correct_answers, student_answer)
 
 
+STYLE_CHANGE_PROMPT_TEMPLATE = """{conversation_context_block}
+学生刚发来这句话：
+{message}
+
+# 任务
+判断学生这句话是不是在要求调整"讲解的详细程度"或"语气/态度"本身，而不是在问知识点内容
+（对应提示词库.md"风格调整意图识别节点"一节，这里是独立于内容问答的一个前置轻量判断，
+不涉及专业内容对错，判断风险低）。
+
+判断参考（不是穷举，按语义理解，不要机械匹配关键词，学生的说法可能五花八门）：
+- "讲详细点""能展开说说吗""我想看推导过程" → detail_level_change=更详细
+- "简单点就行""别讲太多""说重点" → detail_level_change=更简单
+- "别这么啰嗦""你能不能直接说答案" → detail_level_change=更简单，encourage_level_change=更严格直接
+- "你可以对我温柔一点吗""我压力有点大" → encourage_level_change=更鼓励
+- 学生只是在正常回答问题或提问知识点内容，没有对讲解方式本身提要求 → wants_change=false，其余两项为"不变"
+
+只输出以下JSON，不要输出多余文字：
+{{"wants_change": true 或 false, "detail_level_change": "更详细 | 更简单 | 不变", "encourage_level_change": "更鼓励 | 更严格直接 | 不变"}}"""
+
+
+def _mock_detect_style_change(message: str) -> dict:
+    """没配key时的降级判断：风格偏好这种一旦判断错误就会持久化下去、影响后面每一轮
+    讲解风格的信号，不像普通兜底回复错一次就过去了，宁可保守地判"不管"（wants_change=False），
+    也不用关键词猜——猜错的代价（把学生的正常提问误判成风格调整，白白牺牲了当轮内容
+    回答的机会）比"没配key时这个功能暂时不生效"更高。"""
+    return {"wants_change": False, "detail_level_change": "不变", "encourage_level_change": "不变"}
+
+
+def detect_style_change_llm(message: str, conversation_context: str = "") -> dict:
+    """判断学生这句话是不是在要求调整讲解详细度/语气，返回的变化量交给
+    mastery_model.update_style_prefs()去挪档位、持久化。不用关键词表——"你可以对我温柔
+    一点吗""别讲这么复杂"这类没有事先枚举到的说法，关键词匹配会漏判，只有语义理解能兜住，
+    跟本文件其他检测器（quiz请求/pending作答判断）是同一个理由。没配key/调用失败时降级成
+    _mock_detect_style_change()（保守地判"不管"，不用关键词猜，见其docstring说明）。
+    """
+    if not QIANFAN_API_KEY:
+        return _mock_detect_style_change(message)
+
+    context_block = f"之前的对话：\n{conversation_context}\n" if conversation_context else ""
+    prompt = STYLE_CHANGE_PROMPT_TEMPLATE.format(conversation_context_block=context_block, message=message)
+    try:
+        raw_text = _call_llm(prompt)
+        result = _extract_json(raw_text)
+        return {
+            "wants_change": bool(result.get("wants_change", False)),
+            "detail_level_change": result.get("detail_level_change", "不变"),
+            "encourage_level_change": result.get("encourage_level_change", "不变"),
+        }
+    except (urllib.error.URLError, urllib.error.HTTPError, ValueError, json.JSONDecodeError):
+        return _mock_detect_style_change(message)
+
+
 def generate_explanation_and_media(knowledge_point: KnowledgePoint, message: str, student_state: dict,
                                     conversation_context: str = "", student_profile_summary: str = "") -> dict:
     """对外唯一入口：给定知识点+学生消息+学情状态，返回 {explanation, media:{content_id, reason}}。

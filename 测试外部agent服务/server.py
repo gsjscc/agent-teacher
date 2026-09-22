@@ -18,10 +18,13 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
 from knowledge_base import KNOWLEDGE_POINTS
-from llm_client import generate_explanation_and_media, classify_knowledge_points_llm, generate_fallback_reply
+from llm_client import (
+    generate_explanation_and_media, classify_knowledge_points_llm, generate_fallback_reply,
+    detect_style_change_llm,
+)
 from mastery_model import (
     record_answer, record_qualitative_signal, get_profile, get_due_for_review, get_question,
-    format_profile_summary_text,
+    format_profile_summary_text, get_style_prefs, update_style_prefs,
 )
 from signal_log import get_signals, SIGNAL_TYPES, POLARITIES
 import conversation_memory
@@ -58,6 +61,25 @@ def _log_agent_call(direction, payload):
         audit_logger.info("%s %s", direction, json.dumps(payload, ensure_ascii=False))
     except Exception as e:
         audit_logger.info("%s <log serialization failed: %s>", direction, e)
+
+
+def _style_change_ack_text(detail_level_change: str, encourage_level_change: str) -> str:
+    """学生这轮消息纯粹是风格反馈（分类不到任何知识点，说明没有夹带其他内容诉求）时，
+    直接拼一句确认回复，不用再为这么简单确定的一句话专门发一次LLM调用——变化量已经是
+    llm_client.detect_style_change_llm()判断好的结构化结果，不存在语义模糊需要LLM再
+    "自然生成"的必要，模板拼接就足够自然，也省一次网络请求。"""
+    parts = []
+    if detail_level_change == "更详细":
+        parts.append("以后给你讲得更详细一些")
+    elif detail_level_change == "更简单":
+        parts.append("以后给你讲得更简洁一些")
+    if encourage_level_change == "更鼓励":
+        parts.append("语气也会更温和鼓励一点")
+    elif encourage_level_change == "更严格直接":
+        parts.append("以后更直接一点，少寒暄")
+    if not parts:
+        return "好的，我记下了。"
+    return "好的，" + "，".join(parts) + "，你随时可以再跟我说要不要调整。"
 
 
 def _load_quiz_bank():
@@ -301,6 +323,22 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
                     return
                 # else: 不像在回答，不清pending_question，往下继续走正常流程
 
+        # ------------------------------------------------------------------
+        # detail_level/encourage_level 的真正数据源：判断学生这句话是不是在要求调整讲解
+        # 详细度/语气本身（"讲详细点""别这么啰嗦"），不是在问知识点内容。检测到就立刻写回
+        # student_style.json 持久化，并且当场更新style_prefs——这样即使这句话同时也带着
+        # 内容诉求（比如"详细讲讲压力角"），下面生成讲解时读到的detail_level已经是调整后的
+        # 新值，不用等下一轮才生效。放在pending_question判分分支之后（那边已经处理过的请求
+        # 不会再往下走）、quiz请求检测之前——纯粹的风格反馈("别这么啰嗦")不应该被误判成
+        # 出题请求或走完整的知识点分类，提前在这里判断能避免这种误判。
+        # ------------------------------------------------------------------
+        style_prefs = get_style_prefs(effective_student_id)
+        style_change = detect_style_change_llm(message, conversation_context)
+        if style_change["wants_change"]:
+            style_prefs = update_style_prefs(
+                effective_student_id, style_change["detail_level_change"], style_change["encourage_level_change"]
+            )
+
         quiz_request = quiz.detect_quiz_request(message)
         if quiz_request["is_quiz_request"]:
             # 同上：挑"该复习的薄弱知识点"要读表B的due_for_review，必须用effective_student_id，
@@ -341,10 +379,17 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         matched_kps = classify_knowledge_points_llm(message)
         if not matched_kps:
             # 分类不到知识点，不代表只有"超纲问题"一种可能——也可能是打招呼/寒暄/道谢/
-            # 告别，或者分类模块本身没理解到但其实是相关问题。不用写死的关键词规则去猜
-            # 是哪种情况（那样只适合覆盖有限的、能穷举的说法），交给LLM自己判断怎么
-            # 自然回应，见 generate_fallback_reply()/FALLBACK_REPLY_PROMPT_TEMPLATE。
-            reply = generate_fallback_reply(message, conversation_context, student_profile_summary)
+            # 告别，或者分类模块本身没理解到但其实是相关问题，或者干脆是一句纯粹的风格反馈
+            # （"别这么啰嗦"这类话本身也分类不到任何知识点）。不用写死的关键词规则去猜是哪种
+            # 情况（那样只适合覆盖有限的、能穷举的说法），交给LLM自己判断怎么自然回应，见
+            # generate_fallback_reply()/FALLBACK_REPLY_PROMPT_TEMPLATE——但如果上面已经判断出
+            # 这轮是纯粹的风格调整诉求，直接给一句确认回复即可，不用再让fallback的LLM去猜这句
+            # "别这么啰嗦"到底是打招呼/超纲/模糊里的哪一种（那几个桶都套不上风格反馈这种情况），
+            # 也省了一次不必要的LLM调用。
+            if style_change["wants_change"]:
+                reply = _style_change_ack_text(style_change["detail_level_change"], style_change["encourage_level_change"])
+            else:
+                reply = generate_fallback_reply(message, conversation_context, student_profile_summary)
             conversation_memory.append_turn(conversation_id, message, reply, student_id)
             response_payload = {
                 "reply": reply,
@@ -354,6 +399,7 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             _log_agent_call("in_parsed", {
                 "message": message, "conversation_id": conversation_id, "student_id": student_id,
                 "has_platform_history": bool(platform_history), "classified_kp": None,
+                "style_change": style_change if style_change["wants_change"] else None,
             })
             _log_agent_call("out", response_payload)
             self._send_json(200, response_payload)
@@ -367,7 +413,10 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         # 还用原始student_id（匿名时是空字符串），会永远查不到刚记进去的数据，匿名学生答对
         # 再多题、mastery_level也会一直卡在"未学"，个性化形同虚设。放在这里（分类出kp之后）
         # 而不是分类之前，是因为表B是按"学生-知识点"这个组合维度存的，没有具体kp就查不出
-        # 针对性的那一行。detail_level/encourage_level 表B目前没有对应字段，暂时保持默认值。
+        # 针对性的那一行。detail_level/encourage_level 用上面已经算好的style_prefs——那是
+        # 这个学生自己表达过的真实偏好（持久化在student_style.json里，见mastery_model.py
+        # get_style_prefs()的说明），不是像之前那样从请求体data.get(..., "中")读一个从来
+        # 没人会填的字段、永远只能拿到硬编码默认值。
         mastery_level = "未学"
         profile_rows = get_profile(effective_student_id).get("knowledge_points", [])
         matched_row = next((r for r in profile_rows if r["knowledge_point_id"] == kp.id), None)
@@ -375,8 +424,8 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
             mastery_level = matched_row["mastery_state"]
         student_state = {
             "mastery_level": mastery_level,
-            "detail_level": data.get("detail_level", "中"),
-            "encourage_level": data.get("encourage_level", "中"),
+            "detail_level": style_prefs["detail_level"],
+            "encourage_level": style_prefs["encourage_level"],
         }
 
         result = generate_explanation_and_media(kp, message, student_state, conversation_context, student_profile_summary)
@@ -392,7 +441,8 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         _log_agent_call("in_parsed", {
             "message": message, "conversation_id": conversation_id, "student_id": student_id,
             "has_platform_history": bool(platform_history), "classified_kp": kp.id,
-            "mastery_level": mastery_level,
+            "mastery_level": mastery_level, "student_state": student_state,
+            "style_change": style_change if style_change["wants_change"] else None,
         })
         _log_agent_call("out", response_payload)
         self._send_json(200, response_payload)
