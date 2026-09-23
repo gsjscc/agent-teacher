@@ -31,6 +31,7 @@ import conversation_memory
 import quiz
 import mechanism_library
 import visual_store
+import demo_script
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEXTBOOK_IMG_DIR = os.path.join(BASE_DIR, "..", "教材图片")
@@ -528,6 +529,27 @@ img {{ max-width:90%; max-height:80vh; background:#fff; border-radius:8px; paddi
         if platform_history:
             conversation_memory.merge_platform_history(conversation_id, platform_history, student_id)
         conversation_context = conversation_memory.build_context_text(conversation_id)
+
+        # 演示视频录制用的剧本短路：命中就直接返回写死的reply/content_id，不经过下面任何
+        # LLM判断（分类/出题/讲解全部跳过），保证同一句台词永远拿到同一个画面，见
+        # demo_script.py顶部说明。正常教学流量因为SCRIPT是空列表，match_script永远返回
+        # None，这条短路不会有任何影响。
+        script_step = demo_script.match_script(message)
+        if script_step is not None:
+            reply = script_step["reply"] + _embed_media_markdown(script_step.get("content_id", "none"))
+            conversation_memory.append_turn(conversation_id, message, reply, student_id)
+            response_payload = {
+                "reply": reply,
+                "content_id": script_step.get("content_id", "none"),
+                "knowledge_point": None,
+            }
+            _log_agent_call("in_parsed", {
+                "message": message, "conversation_id": conversation_id, "student_id": student_id,
+                "demo_script_hit": script_step["trigger"],
+            })
+            _log_agent_call("out", response_payload)
+            self._send_json(200, response_payload)
+            return
 
         # 表B更新要求"student_id"能唯一标识一个人；没传student_id时（访客模式、系统变量
         # 没绑定成功）不能全部塞进同一个共享的"匿名学生"桶——那样会把互不相干的人的答题
